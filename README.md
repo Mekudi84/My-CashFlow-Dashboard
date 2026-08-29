@@ -1,41 +1,60 @@
-# FinanceFlow — Personal Finance Dashboard
+# CashFlow — Personal Finance Dashboard
 
-A vanilla JavaScript project demonstrating JavaScript fundamentals through a realistic personal finance application.
+A React + Vite personal finance dashboard built to track income, expenses, budgets, and spending insights with a polished, responsive UI.
 
 ## Technologies
 
-- HTML5
-- CSS3
-- Vanilla JavaScript (ES6 modules)
+- React 18
+- Vite
+- CSS3 (custom properties, dark/light theme)
 - Browser localStorage
+
+## Architecture
+
+- **State management** — `useReducer` in `src/hooks/useFinanceData.js` with actions for adding, editing, deleting transactions and budgets, loading demo data, clearing all data, and managing filter/sort/editing state.
+- **Custom hooks** — `useLocalStorage` for persistence, `useTheme` for dark/light mode toggling.
+- **Derived state** — `useMemo` recomputes summary cards (balance, income, expenses, savings rate), filtered and sorted transactions, budget progress stats, and spending insights on every relevant state change.
+- **Components** — focused, single-responsibility components in `src/components/`:
+  - `TransactionForm` — controlled form with inline validation
+  - `TransactionItem` — individual transaction row with edit/delete actions
+  - `TransactionList` — renders filtered transactions or empty state
+  - `SummaryCards` — balance, income, expenses, and savings rate
+  - `BudgetForm` — controlled budget creation/update form
+  - `BudgetItem` — budget card with progress bar and over-limit styling
+  - `BudgetList` — renders all budgets
+  - `FilterBar` — search, type filter, category filter, and sort controls
+  - `InsightsPanel` — top spending category, average expense, active budget count
+  - `ThemeToggle` — dark/light mode button
 
 ## Features
 
-- Add, edit and delete transactions
-- Income and expense tracking
-- Automatic balance, income and expense calculations
-- Savings-rate calculation
-- Search transactions
-- Filter by type and category
-- Sort by date and amount
-- Category budgets with progress indicators
-- Budget warning/over-limit states
-- LocalStorage persistence
-- JSON serialization/deserialization
-- Form validation
-- Dark/light mode
-- Spending insights
+- Add, edit, and delete transactions with inline validation
+- Income and expense tracking with ₦ currency formatting via `Intl.NumberFormat`
+- Automatic balance, income, expense, and savings-rate calculations
+- Search transactions by description
+- Filter by type (income/expense) and category
+- Sort by newest, oldest, highest amount, and lowest amount
+- Category budgets with animated progress bars
+- Budget warning (≥80%) and over-limit (≥100%) states
+- LocalStorage persistence for transactions, budgets, and theme preference
+- Dark/light mode toggle with system-wide persistence
+- Spending insights panel (top category, average expense, active budget count)
 - Responsive mobile layout
-- Demo data loader
-
-## JavaScript concepts demonstrated
-
-Variables, constants, primitive/reference values, arrays, objects, functions, arrow functions, parameters, return values, conditionals, loops, `map()`, `filter()`, `find()`, `reduce()`, `sort()`, destructuring, spread syntax, template literals, DOM manipulation, event listeners, event delegation, form handling, validation, localStorage, JSON, Date, string/number methods, ES6 modules, and error handling.
+- Demo data loader for quick testing
+- Clear all data with confirmation dialog
+- Toast notifications on add, update, and delete actions
 
 ## How to run
 
-Because the project uses ES6 modules, open it through a local development server rather than directly using `file://`.
+```bash
+npm install
+npm run dev
+```
 
-If you use VS Code, install the **Live Server** extension, right-click `index.html`, and choose **Open with Live Server**.
+Then open **http://localhost:5173** in your browser.
 
-No API, React, Node.js, framework, backend, or external JavaScript library is required.
+## Build for production
+
+```bash
+npm run build
+```
