@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 
 const formatMoney = (amount) =>
-  new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(amount);
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
 
 const formatDate = (date) =>
-  new Intl.DateTimeFormat("en-NG", { day: "2-digit", month: "short", year: "numeric" })
+  new Intl.DateTimeFormat("en-US", { day: "2-digit", month: "short", year: "numeric" })
     .format(new Date(`${date}T00:00:00`));
 
 const TODAY = () => new Date().toISOString().split("T")[0];

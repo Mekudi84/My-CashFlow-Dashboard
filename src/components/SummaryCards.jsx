@@ -1,5 +1,5 @@
 const formatMoney = (amount) =>
-  new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(amount);
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
 
 export default function SummaryCards({ summary }) {
   const { balance, income, expenses, savingsRate } = summary;

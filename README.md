@@ -29,7 +29,7 @@ A React + Vite personal finance dashboard built to track income, expenses, budge
 ## Features
 
 - Add, edit, and delete transactions with inline validation
-- Income and expense tracking with ₦ currency formatting via `Intl.NumberFormat`
+- Income and expense tracking with $ currency formatting via `Intl.NumberFormat`
 - Automatic balance, income, expense, and savings-rate calculations
 - Search transactions by description
 - Filter by type (income/expense) and category

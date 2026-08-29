@@ -1,5 +1,5 @@
 const formatMoney = (amount) =>
-  new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(amount);
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
 
 export default function BudgetItem({ budget, onDelete }) {
   const remaining = budget.limit - budget.spent;

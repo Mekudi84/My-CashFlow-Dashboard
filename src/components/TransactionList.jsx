@@ -5,7 +5,7 @@ export default function TransactionList({ transactions, onEdit, onDelete }) {
     <>
       {transactions.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-icon">₦</div>
+          <div className="empty-icon">$</div>
           <h3>No transactions yet</h3>
           <p>Add your first income or expense to start tracking your finances.</p>
         </div>

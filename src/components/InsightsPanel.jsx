@@ -1,5 +1,5 @@
 const formatMoney = (amount) =>
-  new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(amount);
+  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
 
 export default function InsightsPanel({ insights, budgetCount }) {
   const { topCategory, average, expenseCount } = insights;
@@ -21,7 +21,7 @@ export default function InsightsPanel({ insights, budgetCount }) {
         </div>
         <div className="insight">
           <span>Average expense</span>
-          <strong>{expenseCount > 0 ? formatMoney(average) : "₦0.00"}</strong>
+          <strong>{expenseCount > 0 ? formatMoney(average) : "$0.00"}</strong>
         </div>
         <div className="insight">
           <span>Budget categories</span>
