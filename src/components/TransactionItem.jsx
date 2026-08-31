@@ -1,14 +1,8 @@
 import { useRef, useEffect } from "react";
 import { escapeHtml } from "../utils/escape";
+import { formatMoney } from "../utils/currency";
 
-const formatMoney = (amount) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
-
-const formatDate = (date) =>
-  new Intl.DateTimeFormat("en-US", { day: "2-digit", month: "short", year: "numeric" })
-    .format(new Date(`${date}T00:00:00`));
-
-export default function TransactionItem({ transaction, onEdit, onDelete }) {
+export default function TransactionItem({ transaction, onEdit, onDelete, currency }) {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -28,7 +22,7 @@ export default function TransactionItem({ transaction, onEdit, onDelete }) {
         </div>
       </div>
       <div className={`transaction-amount ${transaction.type}`}>
-        {sign}{formatMoney(Number(transaction.amount))}
+        {sign}{formatMoney(Number(transaction.amount), currency)}
       </div>
       <div className="actions">
         <button className="action-btn" type="button" onClick={() => onEdit(transaction.id)}>Edit</button>
@@ -36,4 +30,9 @@ export default function TransactionItem({ transaction, onEdit, onDelete }) {
       </div>
     </article>
   );
+}
+
+function formatDate(date) {
+  return new Intl.DateTimeFormat("en-US", { day: "2-digit", month: "short", year: "numeric" })
+    .format(new Date(`${date}T00:00:00`));
 }

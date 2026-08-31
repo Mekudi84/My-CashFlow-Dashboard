@@ -1,4 +1,4 @@
-import { useReducer, useMemo } from "react";
+import { useReducer, useEffect, useMemo } from "react";
 import {
   getIncome,
   getExpenses,
@@ -11,7 +11,19 @@ import {
 } from "../utils/transactions";
 import { getBudgetSpent, getBudgetStatus } from "../utils/budget";
 
+const STORAGE_KEY_TRANSACTIONS = "financeflow_transactions";
+const STORAGE_KEY_BUDGETS = "financeflow_budgets";
+
 const TODAY = () => new Date().toISOString().split("T")[0];
+
+function loadFromStorage(key, fallback) {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 const initialState = {
   transactions: [],
@@ -98,7 +110,27 @@ function financeReducer(state, action) {
 }
 
 export function useFinanceData() {
-  const [state, dispatch] = useReducer(financeReducer, initialState);
+  const [state, dispatch] = useReducer(financeReducer, undefined, () => ({
+    ...initialState,
+    transactions: loadFromStorage(STORAGE_KEY_TRANSACTIONS, []),
+    budgets: loadFromStorage(STORAGE_KEY_BUDGETS, []),
+  }));
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_TRANSACTIONS, JSON.stringify(state.transactions));
+    } catch (error) {
+      console.error("Could not save transactions:", error);
+    }
+  }, [state.transactions]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_BUDGETS, JSON.stringify(state.budgets));
+    } catch (error) {
+      console.error("Could not save budgets:", error);
+    }
+  }, [state.budgets]);
 
   const summary = useMemo(() => {
     const income = getIncome(state.transactions);

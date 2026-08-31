@@ -1,6 +1,8 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useFinanceData } from "./hooks/useFinanceData";
 import { useTheme } from "./hooks/useTheme";
+import { useLocalStorage } from "./hooks/useLocalStorage";
+import { CURRENCIES, DEFAULT_CURRENCY } from "./utils/currency";
 import TransactionForm from "./components/TransactionForm";
 import TransactionList from "./components/TransactionList";
 import SummaryCards from "./components/SummaryCards";
@@ -9,11 +11,27 @@ import BudgetList from "./components/BudgetList";
 import InsightsPanel from "./components/InsightsPanel";
 import FilterBar from "./components/FilterBar";
 import ThemeToggle from "./components/ThemeToggle";
+import CurrencySelector from "./components/CurrencySelector";
+import ChartsPanel from "./components/ChartsPanel";
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return "Good morning";
+  if (hour >= 12 && hour < 17) return "Good afternoon";
+  if (hour >= 17 && hour < 21) return "Good evening";
+  return "Good night";
+}
+
+function getMonthYear() {
+  const now = new Date();
+  return now.toLocaleString("en-US", { month: "long", year: "numeric" });
+}
 
 export default function App() {
   const { state, dispatch, summary, categories, filteredTransactions, budgetStats, insights, TODAY } =
     useFinanceData();
-  const { theme, toggleTheme, resetTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
+  const [currency, setCurrency] = useLocalStorage("financeflow_currency", DEFAULT_CURRENCY);
   const toastTimeout = useRef(null);
 
   useEffect(() => {
@@ -93,9 +111,13 @@ export default function App() {
     localStorage.removeItem("financeflow_transactions");
     localStorage.removeItem("financeflow_budgets");
     localStorage.removeItem("financeflow_theme");
-    resetTheme();
+    localStorage.removeItem("financeflow_currency");
     dispatch({ type: "CLEAR_ALL" });
-  }, [dispatch, resetTheme]);
+  }, [dispatch]);
+
+  const greeting = useMemo(getGreeting, []);
+  const monthYear = useMemo(getMonthYear, []);
+  const currencySymbol = CURRENCIES[currency]?.symbol || CURRENCIES[DEFAULT_CURRENCY].symbol;
 
   const editingTransaction = state.editingId
     ? state.transactions.find((t) => t.id === state.editingId) || null
@@ -104,16 +126,23 @@ export default function App() {
   return (
     <>
       <header className="topbar">
-        <div>
+        <div className="topbar-left">
           <p className="eyebrow">COWRYWISE</p>
-          <h1>CashFlow</h1>
-          <p className="subtitle">BASSEY'S PERSONAL WALLET</p>
+          <h1>{greeting}, Unyime 👋</h1>
+          <p className="subtitle">Here's your financial overview for {new Date().toLocaleString("en-US", { month: "long" })}.</p>
         </div>
-        <ThemeToggle theme={theme} onToggle={toggleTheme} />
+        <div className="topbar-right">
+          <div className="month-selector" aria-label="Current month">
+            <span className="month-label">{monthYear}</span>
+            <span className="month-arrow" aria-hidden="true">▼</span>
+          </div>
+          <CurrencySelector currency={currency} onChange={setCurrency} />
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
+        </div>
       </header>
 
       <main className="container">
-        <SummaryCards summary={summary} />
+        <SummaryCards summary={summary} currency={currency} />
 
         <section className="grid-two">
           <article className="panel">
@@ -141,9 +170,11 @@ export default function App() {
             </div>
 
             <BudgetForm onAddBudget={handleAddBudget} />
-            <BudgetList budgetStats={budgetStats} onDeleteBudget={handleDeleteBudget} />
+            <BudgetList budgetStats={budgetStats} onDeleteBudget={handleDeleteBudget} currency={currency} />
           </article>
         </section>
+
+        <ChartsPanel transactions={state.transactions} currency={currency} />
 
         <section className="panel">
           <div className="panel-heading transactions-heading">
@@ -173,10 +204,11 @@ export default function App() {
             transactions={filteredTransactions}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            currency={currency}
           />
         </section>
 
-        <InsightsPanel insights={insights} budgetCount={state.budgets.length} />
+        <InsightsPanel insights={insights} budgetCount={state.budgets.length} currency={currency} />
 
         <section className="footer-actions">
           <button className="btn ghost" type="button" onClick={handleLoadDemo}>

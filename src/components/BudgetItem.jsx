@@ -1,7 +1,6 @@
-const formatMoney = (amount) =>
-  new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
+import { formatMoney } from "../utils/currency";
 
-export default function BudgetItem({ budget, onDelete }) {
+export default function BudgetItem({ budget, onDelete, currency }) {
   const remaining = budget.limit - budget.spent;
 
   return (
@@ -9,7 +8,7 @@ export default function BudgetItem({ budget, onDelete }) {
       <div className="budget-top">
         <strong>{budget.category}</strong>
         <span>
-          {formatMoney(budget.spent)} / {formatMoney(budget.limit)}
+          {formatMoney(budget.spent, currency)} / {formatMoney(budget.limit, currency)}
         </span>
       </div>
       <div className="progress">
@@ -19,8 +18,8 @@ export default function BudgetItem({ budget, onDelete }) {
         <span>{budget.percent.toFixed(0)}% used</span>
         <span>
           {remaining >= 0
-            ? `${formatMoney(remaining)} left`
-            : `${formatMoney(Math.abs(remaining))} over`}
+            ? `${formatMoney(remaining, currency)} left`
+            : `${formatMoney(Math.abs(remaining), currency)} over`}
         </span>
         <button className="delete-budget" type="button" onClick={() => onDelete(budget.id)}>
           Remove
