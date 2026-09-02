@@ -103,28 +103,6 @@ export default function App() {
     [dispatch]
   );
 
-  const handleLoadDemo = useCallback(() => {
-    const demoDate = TODAY();
-    dispatch({
-      type: "LOAD_DEMO",
-      payload: {
-        transactions: [
-          { id: 1, description: "Monthly Salary", amount: 250000, type: "income", category: "Salary", date: demoDate },
-          { id: 2, description: "Freelance Website", amount: 85000, type: "income", category: "Freelance", date: demoDate },
-          { id: 3, description: "House Rent", amount: 70000, type: "expense", category: "Rent", date: demoDate },
-          { id: 4, description: "Groceries", amount: 32000, type: "expense", category: "Food", date: demoDate },
-          { id: 5, description: "Transport", amount: 15000, type: "expense", category: "Transport", date: demoDate },
-          { id: 6, description: "Online Course", amount: 18000, type: "expense", category: "Education", date: demoDate },
-        ],
-        budgets: [
-          { id: 101, category: "Food", limit: 50000 },
-          { id: 102, category: "Transport", limit: 30000 },
-          { id: 103, category: "Entertainment", limit: 20000 },
-        ],
-      },
-    });
-  }, [dispatch, TODAY]);
-
   const handleClearAll = useCallback(() => {
     if (!confirm("Delete all transactions, budgets and saved preferences?")) return;
     localStorage.removeItem("financeflow_transactions");
@@ -176,9 +154,6 @@ export default function App() {
   const hasActiveFilters =
     state.search.trim() !== "" || state.filterType !== "all" || state.filterCategory !== "all";
 
-  const hasAnyData = state.transactions.length > 0 || state.budgets.length > 0;
-  const showDemoBanner = hasAnyData && state.transactions.every((t) => [1, 2, 3, 4, 5, 6].includes(t.id));
-
   return (
     <div className="app-shell">
       <Sidebar active={activeSection} onSelect={handleNav} />
@@ -211,13 +186,6 @@ export default function App() {
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
           </div>
         </header>
-
-        {showDemoBanner && (
-          <div className="demo-banner reveal" style={{ "--reveal-delay": "60ms" }} role="status">
-            <span className="demo-badge">SAMPLE DATA</span>
-            <p>Sample financial data for demonstration purposes. Replace with your own to start tracking.</p>
-          </div>
-        )}
 
         <main className="container">
           <div className="reveal" style={{ "--reveal-delay": "100ms" }}>
@@ -320,14 +288,10 @@ export default function App() {
               currency={currency}
               hasActiveFilters={hasActiveFilters}
               onClearFilters={handleClearFilters}
-              onLoadDemo={handleLoadDemo}
             />
           </section>
 
           <section className="footer-actions reveal" style={{ "--reveal-delay": "460ms" }}>
-            <button className="btn ghost" type="button" onClick={handleLoadDemo}>
-              {hasAnyData ? "Reload Demo Data" : "Load Demo Data"}
-            </button>
             <button className="btn danger-outline" type="button" onClick={handleClearAll}>
               Clear All Data
             </button>

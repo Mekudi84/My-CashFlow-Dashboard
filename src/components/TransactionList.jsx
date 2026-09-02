@@ -1,19 +1,15 @@
 import TransactionItem from "./TransactionItem";
 
-export default function TransactionList({ transactions, onEdit, onDelete, hasActiveFilters, onClearFilters, onLoadDemo }) {
+export default function TransactionList({ transactions, onEdit, onDelete, hasActiveFilters, onClearFilters }) {
   if (transactions.length === 0) {
     return (
       <div className="empty-state">
         <div className="empty-icon">$</div>
         <h3>No transactions yet</h3>
-        <p>Add your first income or expense to start tracking your finances.</p>
-        {hasActiveFilters ? (
+        <p>Start by adding your first transaction to see your financial activity here.</p>
+        {hasActiveFilters && (
           <button type="button" className="btn ghost empty-cta" onClick={onClearFilters}>
             Clear filters
-          </button>
-        ) : (
-          <button type="button" className="btn primary empty-cta" onClick={onLoadDemo}>
-            Explore Demo Data
           </button>
         )}
       </div>

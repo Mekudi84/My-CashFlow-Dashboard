@@ -74,14 +74,6 @@ function financeReducer(state, action) {
         budgets: state.budgets.filter((b) => b.id !== action.payload),
         toast: "Budget removed.",
       };
-    case "LOAD_DEMO":
-      return {
-        ...state,
-        transactions: action.payload.transactions,
-        budgets: action.payload.budgets,
-        editingId: null,
-        toast: "Demo data loaded.",
-      };
     case "CLEAR_ALL":
       return {
         ...state,
