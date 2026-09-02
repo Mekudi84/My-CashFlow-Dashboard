@@ -186,7 +186,17 @@ export default function App() {
       <div className="app-main">
         <header className="topbar reveal" style={{ "--reveal-delay": "0ms" }}>
           <div className="topbar-left">
-            <p className="eyebrow">BASSEYFLOW · FINANCE</p>
+            <div className="topbar-brand">
+              <img
+                src="/basseyflow-logo.svg"
+                alt="BasseyFlow"
+                className="topbar-logo"
+              />
+            </div>
+            <p className="eyebrow brand-eyebrow">
+              <span>BASSEYFLOW</span>
+              <span className="brand-tagline">Financial clarity · Smarter cash flow</span>
+            </p>
             <h1>
               {greeting}, <span className="user-name">Unyime</span> <span aria-hidden="true">👋</span>
             </h1>
