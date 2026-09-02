@@ -1,29 +1,14 @@
-import { useReducer, useEffect, useMemo } from "react";
+import { useEffect, useReducer, useMemo, useCallback, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 import {
   getIncome,
   getExpenses,
   getBalance,
   getSavingsRate,
-  getCategoryExpenses,
   filterTransactions,
   sortTransactions,
-  findTransaction,
 } from "../utils/transactions";
-import { getBudgetSpent, getBudgetStatus } from "../utils/budget";
-
-const STORAGE_KEY_TRANSACTIONS = "financeflow_transactions";
-const STORAGE_KEY_BUDGETS = "financeflow_budgets";
-
-const TODAY = () => new Date().toISOString().split("T")[0];
-
-function loadFromStorage(key, fallback) {
-  try {
-    const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : fallback;
-  } catch {
-    return fallback;
-  }
-}
+import { getBudgetStatus } from "../utils/budget";
 
 const initialState = {
   transactions: [],
@@ -38,6 +23,10 @@ const initialState = {
 
 function financeReducer(state, action) {
   switch (action.type) {
+    case "SET_TRANSACTIONS":
+      return { ...state, transactions: action.payload };
+    case "SET_BUDGETS":
+      return { ...state, budgets: action.payload };
     case "ADD_TRANSACTION":
       return {
         ...state,
@@ -75,13 +64,7 @@ function financeReducer(state, action) {
         toast: "Budget removed.",
       };
     case "CLEAR_ALL":
-      return {
-        ...state,
-        transactions: [],
-        budgets: [],
-        editingId: null,
-        toast: "All data cleared.",
-      };
+      return { ...state, transactions: [], budgets: [], editingId: null, toast: "All data cleared." };
     case "START_EDIT":
       return { ...state, editingId: action.payload };
     case "CANCEL_EDIT":
@@ -96,33 +79,201 @@ function financeReducer(state, action) {
       return { ...state, filterType: action.payload };
     case "SET_FILTER_CATEGORY":
       return { ...state, filterCategory: action.payload };
+    case "RESET":
+      return initialState;
     default:
       return state;
   }
 }
 
+const TODAY = () => new Date().toISOString().split("T")[0];
+
 export function useFinanceData() {
-  const [state, dispatch] = useReducer(financeReducer, undefined, () => ({
-    ...initialState,
-    transactions: loadFromStorage(STORAGE_KEY_TRANSACTIONS, []),
-    budgets: loadFromStorage(STORAGE_KEY_BUDGETS, []),
-  }));
+  const { supabase, user } = useAuth();
+  const [state, dispatch] = useReducer(financeReducer, initialState);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const userId = user?.id || null;
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY_TRANSACTIONS, JSON.stringify(state.transactions));
-    } catch (error) {
-      console.error("Could not save transactions:", error);
-    }
-  }, [state.transactions]);
+    let cancelled = false;
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY_BUDGETS, JSON.stringify(state.budgets));
-    } catch (error) {
-      console.error("Could not save budgets:", error);
+    if (!supabase || !userId) {
+      dispatch({ type: "RESET" });
+      setLoading(false);
+      return undefined;
     }
-  }, [state.budgets]);
+
+    async function load() {
+      setLoading(true);
+      setError("");
+      try {
+        const [txResult, budgetResult] = await Promise.all([
+          supabase
+            .from("transactions")
+            .select("id, type, category, amount, description, date, created_at")
+            .eq("user_id", userId)
+            .order("date", { ascending: false }),
+          supabase
+            .from("budgets")
+            .select("id, category, amount, period, created_at")
+            .eq("user_id", userId)
+            .order("created_at", { ascending: false }),
+        ]);
+
+        if (cancelled) return;
+        if (txResult.error) throw txResult.error;
+        if (budgetResult.error) throw budgetResult.error;
+
+        const normalizedTransactions = (txResult.data || []).map((row) => ({
+          id: row.id,
+          type: row.type,
+          category: row.category,
+          amount: Number(row.amount) || 0,
+          description: row.description || "",
+          date: row.date,
+        }));
+        const normalizedBudgets = (budgetResult.data || []).map((row) => ({
+          id: row.id,
+          category: row.category,
+          limit: Number(row.amount) || 0,
+          period: row.period || "monthly",
+        }));
+
+        dispatch({ type: "SET_TRANSACTIONS", payload: normalizedTransactions });
+        dispatch({ type: "SET_BUDGETS", payload: normalizedBudgets });
+      } catch (err) {
+        if (!cancelled) setError(err?.message || "Unable to load your data.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase, userId]);
+
+  const addTransaction = useCallback(
+    async (data) => {
+      if (!supabase || !userId) return;
+      const payload = {
+        user_id: userId,
+        type: data.type,
+        category: data.category,
+        amount: Number(data.amount) || 0,
+        description: (data.description || "").trim(),
+        date: data.date || TODAY(),
+      };
+      const { data: inserted, error: insertError } = await supabase
+        .from("transactions")
+        .insert(payload)
+        .select("id, type, category, amount, description, date")
+        .single();
+      if (insertError) throw insertError;
+      dispatch({ type: "ADD_TRANSACTION", payload: { ...data, id: inserted.id } });
+      return inserted;
+    },
+    [supabase, userId]
+  );
+
+  const editTransaction = useCallback(
+    async (transaction) => {
+      if (!supabase || !userId) return;
+      const payload = {
+        type: transaction.type,
+        category: transaction.category,
+        amount: Number(transaction.amount) || 0,
+        description: (transaction.description || "").trim(),
+        date: transaction.date,
+        updated_at: new Date().toISOString(),
+      };
+      const { error: updateError } = await supabase
+        .from("transactions")
+        .update(payload)
+        .eq("id", transaction.id)
+        .eq("user_id", userId);
+      if (updateError) throw updateError;
+      dispatch({ type: "EDIT_TRANSACTION", payload: transaction });
+    },
+    [supabase, userId]
+  );
+
+  const deleteTransaction = useCallback(
+    async (id) => {
+      if (!supabase || !userId) return;
+      const { error: deleteError } = await supabase
+        .from("transactions")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", userId);
+      if (deleteError) throw deleteError;
+      dispatch({ type: "DELETE_TRANSACTION", payload: id });
+    },
+    [supabase, userId]
+  );
+
+  const addBudget = useCallback(
+    async (budget) => {
+      if (!supabase || !userId) return;
+      const existing = state.budgets.find((b) => b.category === budget.category);
+      if (existing) {
+        const { error: updateError } = await supabase
+          .from("budgets")
+          .update({ amount: Number(budget.limit) || 0, updated_at: new Date().toISOString() })
+          .eq("id", existing.id)
+          .eq("user_id", userId);
+        if (updateError) throw updateError;
+        dispatch({ type: "ADD_BUDGET", payload: budget });
+        return;
+      }
+      const { data: inserted, error: insertError } = await supabase
+        .from("budgets")
+        .insert({
+          user_id: userId,
+          category: budget.category,
+          amount: Number(budget.limit) || 0,
+          period: "monthly",
+        })
+        .select("id, category, amount")
+        .single();
+      if (insertError) throw insertError;
+      dispatch({ type: "ADD_BUDGET", payload: { ...budget, id: inserted.id } });
+    },
+    [supabase, userId, state.budgets]
+  );
+
+  const deleteBudget = useCallback(
+    async (id) => {
+      if (!supabase || !userId) return;
+      const { error: deleteError } = await supabase
+        .from("budgets")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", userId);
+      if (deleteError) throw deleteError;
+      dispatch({ type: "DELETE_BUDGET", payload: id });
+    },
+    [supabase, userId]
+  );
+
+  const clearAll = useCallback(async () => {
+    if (!supabase || !userId) return;
+    const { error: txError } = await supabase
+      .from("transactions")
+      .delete()
+      .eq("user_id", userId);
+    if (txError) throw txError;
+    const { error: budgetError } = await supabase
+      .from("budgets")
+      .delete()
+      .eq("user_id", userId);
+    if (budgetError) throw budgetError;
+    dispatch({ type: "CLEAR_ALL" });
+  }, [supabase, userId]);
 
   const summary = useMemo(() => {
     const income = getIncome(state.transactions);
@@ -148,7 +299,9 @@ export function useFinanceData() {
 
   const budgetStats = useMemo(() => {
     return state.budgets.map((budget) => {
-      const spent = getBudgetSpent(state.transactions, budget.category);
+      const spent = state.transactions
+        .filter(({ type, category }) => type === "expense" && category === budget.category)
+        .reduce((total, { amount }) => total + Number(amount), 0);
       const percent = budget.limit ? (spent / budget.limit) * 100 : 0;
       const width = Math.min(percent, 100);
       const status = getBudgetStatus(budget.limit, spent);
@@ -182,6 +335,14 @@ export function useFinanceData() {
     filteredTransactions,
     budgetStats,
     insights,
+    loading,
+    error,
+    addTransaction,
+    editTransaction,
+    deleteTransaction,
+    addBudget,
+    deleteBudget,
+    clearAll,
     TODAY,
   };
 }
