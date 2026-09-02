@@ -13,6 +13,8 @@ import FilterBar from "./components/FilterBar";
 import ThemeToggle from "./components/ThemeToggle";
 import CurrencySelector from "./components/CurrencySelector";
 import ChartsPanel from "./components/ChartsPanel";
+import Sidebar from "./components/Sidebar";
+import ExpenseBreakdown from "./components/ExpenseBreakdown";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -27,11 +29,18 @@ function getMonthYear() {
   return now.toLocaleString("en-US", { month: "long", year: "numeric" });
 }
 
+function scrollToSection(id) {
+  if (typeof document === "undefined") return;
+  const target = document.getElementById(id);
+  if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 export default function App() {
   const { state, dispatch, summary, categories, filteredTransactions, budgetStats, insights, TODAY } =
     useFinanceData();
   const { theme, toggleTheme } = useTheme();
   const [currency, setCurrency] = useLocalStorage("financeflow_currency", DEFAULT_CURRENCY);
+  const [activeSection, setActiveSection] = useState("dashboard");
   const toastTimeout = useRef(null);
 
   useEffect(() => {
@@ -39,9 +48,19 @@ export default function App() {
       if (toastTimeout.current) clearTimeout(toastTimeout.current);
       toastTimeout.current = setTimeout(() => {
         dispatch({ type: "DISMISS_TOAST" });
-      }, 2200);
+      }, 2400);
     }
   }, [state.toast, dispatch]);
+
+  useEffect(() => {
+    const onKey = (event) => {
+      if (event.key === "Escape" && state.editingId) {
+        dispatch({ type: "CANCEL_EDIT" });
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [state.editingId, dispatch]);
 
   const handleSubmitTransaction = useCallback(
     (data) => {
@@ -57,7 +76,7 @@ export default function App() {
   const handleEdit = useCallback(
     (id) => {
       dispatch({ type: "START_EDIT", payload: id });
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollToSection("transactions");
     },
     [dispatch]
   );
@@ -115,6 +134,37 @@ export default function App() {
     dispatch({ type: "CLEAR_ALL" });
   }, [dispatch]);
 
+  const handleClearFilters = useCallback(() => {
+    dispatch({ type: "SET_SEARCH", payload: "" });
+    dispatch({ type: "SET_FILTER_TYPE", payload: "all" });
+    dispatch({ type: "SET_FILTER_CATEGORY", payload: "all" });
+  }, [dispatch]);
+
+  const handleCardAction = useCallback(
+    (kind) => {
+      if (kind === "income") {
+        dispatch({ type: "SET_FILTER_TYPE", payload: "income" });
+        scrollToSection("transactions");
+      } else if (kind === "expense") {
+        dispatch({ type: "SET_FILTER_TYPE", payload: "expense" });
+        scrollToSection("transactions");
+      } else if (kind === "balance") {
+        dispatch({ type: "SET_FILTER_TYPE", payload: "all" });
+        scrollToSection("transactions");
+      }
+    },
+    [dispatch]
+  );
+
+  const handleNav = useCallback((id) => {
+    setActiveSection(id);
+    if (id === "dashboard") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      scrollToSection(id);
+    }
+  }, []);
+
   const greeting = useMemo(getGreeting, []);
   const monthYear = useMemo(getMonthYear, []);
   const currencySymbol = CURRENCIES[currency]?.symbol || CURRENCIES[DEFAULT_CURRENCY].symbol;
@@ -123,106 +173,161 @@ export default function App() {
     ? state.transactions.find((t) => t.id === state.editingId) || null
     : null;
 
+  const hasActiveFilters =
+    state.search.trim() !== "" || state.filterType !== "all" || state.filterCategory !== "all";
+
+  const hasAnyData = state.transactions.length > 0 || state.budgets.length > 0;
+  const showDemoBanner = hasAnyData && state.transactions.every((t) => [1, 2, 3, 4, 5, 6].includes(t.id));
+
   return (
-    <>
-      <header className="topbar">
-        <div className="topbar-left">
-          <p className="eyebrow">COWRYWISE</p>
-          <h1>{greeting}, Unyime 👋</h1>
-          <p className="subtitle">Here's your financial overview for {new Date().toLocaleString("en-US", { month: "long" })}.</p>
-        </div>
-        <div className="topbar-right">
-          <div className="month-selector" aria-label="Current month">
-            <span className="month-label">{monthYear}</span>
-            <span className="month-arrow" aria-hidden="true">▼</span>
+    <div className="app-shell">
+      <Sidebar active={activeSection} onSelect={handleNav} />
+
+      <div className="app-main">
+        <header className="topbar reveal" style={{ "--reveal-delay": "0ms" }}>
+          <div className="topbar-left">
+            <p className="eyebrow">COWRYWISE · FINANCE</p>
+            <h1>
+              {greeting}, <span className="user-name">Unyime</span> <span aria-hidden="true">👋</span>
+            </h1>
+            <p className="subtitle">Here's your financial overview for {monthYear}.</p>
           </div>
-          <CurrencySelector currency={currency} onChange={setCurrency} />
-          <ThemeToggle theme={theme} onToggle={toggleTheme} />
-        </div>
-      </header>
-
-      <main className="container">
-        <SummaryCards summary={summary} currency={currency} />
-
-        <section className="grid-two">
-          <article className="panel">
-            <div className="panel-heading">
-              <div>
-                <p className="eyebrow">TRANSACTION</p>
-                <h2>{editingTransaction ? "Edit Transaction" : "Add Transaction"}</h2>
-              </div>
+          <div className="topbar-right">
+            <div className="month-selector" aria-label="Current month">
+              <span className="month-dot" aria-hidden="true" />
+              <span className="month-label">{monthYear}</span>
             </div>
+            <CurrencySelector currency={currency} onChange={setCurrency} />
+            <ThemeToggle theme={theme} onToggle={toggleTheme} />
+          </div>
+        </header>
 
-            <TransactionForm
-              editingTransaction={editingTransaction}
-              onSubmit={handleSubmitTransaction}
-              onCancelEdit={() => dispatch({ type: "CANCEL_EDIT" })}
-              formTitle={editingTransaction ? "Edit Transaction" : "Add Transaction"}
+        {showDemoBanner && (
+          <div className="demo-banner reveal" style={{ "--reveal-delay": "60ms" }} role="status">
+            <span className="demo-badge">SAMPLE DATA</span>
+            <p>Sample financial data for demonstration purposes. Replace with your own to start tracking.</p>
+          </div>
+        )}
+
+        <main className="container">
+          <div className="reveal" style={{ "--reveal-delay": "100ms" }}>
+            <SummaryCards
+              summary={summary}
+              currency={currency}
+              transactions={state.transactions}
+              onCardAction={handleCardAction}
             />
-          </article>
+          </div>
 
-          <article className="panel">
-            <div className="panel-heading">
+          <section className="grid-two">
+            <article className="panel reveal" style={{ "--reveal-delay": "180ms" }} id="transactions-form">
+              <div className="panel-heading">
+                <div>
+                  <p className="eyebrow">TRANSACTION</p>
+                  <h2>{editingTransaction ? "Edit Transaction" : "Add Transaction"}</h2>
+                </div>
+              </div>
+
+              <TransactionForm
+                editingTransaction={editingTransaction}
+                onSubmit={handleSubmitTransaction}
+                onCancelEdit={() => dispatch({ type: "CANCEL_EDIT" })}
+                formTitle={editingTransaction ? "Edit Transaction" : "Add Transaction"}
+              />
+            </article>
+
+            <article className="panel reveal" style={{ "--reveal-delay": "220ms" }} id="budgets">
+              <div className="panel-heading">
+                <div>
+                  <p className="eyebrow">BUDGETS</p>
+                  <h2>Category Budgets</h2>
+                </div>
+                <span className="count-badge">
+                  {state.budgets.length} {state.budgets.length === 1 ? "budget" : "budgets"}
+                </span>
+              </div>
+
+              <BudgetForm onAddBudget={handleAddBudget} />
+              <BudgetList budgetStats={budgetStats} onDeleteBudget={handleDeleteBudget} currency={currency} />
+            </article>
+          </section>
+
+          <div className="reveal" style={{ "--reveal-delay": "280ms" }}>
+            <ChartsPanel transactions={state.transactions} currency={currency} />
+          </div>
+
+          <section className="grid-two">
+            <div className="reveal" style={{ "--reveal-delay": "320ms" }}>
+              <ExpenseBreakdown insights={insights} currency={currency} />
+            </div>
+            <div className="reveal" style={{ "--reveal-delay": "360ms" }} id="insights">
+              <InsightsPanel insights={insights} budgetCount={state.budgets.length} currency={currency} />
+            </div>
+          </section>
+
+          <section className="panel reveal" style={{ "--reveal-delay": "400ms" }} id="transactions">
+            <div className="panel-heading transactions-heading">
               <div>
-                <p className="eyebrow">BUDGETS</p>
-                <h2>Category Budgets</h2>
+                <p className="eyebrow">ACTIVITY</p>
+                <h2>Recent Transactions</h2>
+              </div>
+              <div className="heading-actions">
+                {state.filterType !== "all" && (
+                  <span className="filter-pill">
+                    Showing {state.filterType}
+                    <button
+                      type="button"
+                      aria-label="Clear type filter"
+                      onClick={() => dispatch({ type: "SET_FILTER_TYPE", payload: "all" })}
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+                <span className="count-badge">
+                  {filteredTransactions.length} {filteredTransactions.length === 1 ? "item" : "items"}
+                </span>
               </div>
             </div>
 
-            <BudgetForm onAddBudget={handleAddBudget} />
-            <BudgetList budgetStats={budgetStats} onDeleteBudget={handleDeleteBudget} currency={currency} />
-          </article>
-        </section>
+            <FilterBar
+              search={state.search}
+              onSearchChange={(val) => dispatch({ type: "SET_SEARCH", payload: val })}
+              filterType={state.filterType}
+              onTypeChange={(val) => dispatch({ type: "SET_FILTER_TYPE", payload: val })}
+              filterCategory={state.filterCategory}
+              onCategoryChange={(val) => dispatch({ type: "SET_FILTER_CATEGORY", payload: val })}
+              sortBy={state.sortBy}
+              onSortChange={(val) => dispatch({ type: "SET_SORT_BY", payload: val })}
+              categories={categories}
+              count={filteredTransactions.length}
+            />
 
-        <ChartsPanel transactions={state.transactions} currency={currency} />
+            <TransactionList
+              transactions={filteredTransactions}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              currency={currency}
+              hasActiveFilters={hasActiveFilters}
+              onClearFilters={handleClearFilters}
+              onLoadDemo={handleLoadDemo}
+            />
+          </section>
 
-        <section className="panel">
-          <div className="panel-heading transactions-heading">
-            <div>
-              <p className="eyebrow">ACTIVITY</p>
-              <h2>Transactions</h2>
-            </div>
-            <span className="count-badge">
-              {filteredTransactions.length} {filteredTransactions.length === 1 ? "item" : "items"}
-            </span>
-          </div>
+          <section className="footer-actions reveal" style={{ "--reveal-delay": "460ms" }}>
+            <button className="btn ghost" type="button" onClick={handleLoadDemo}>
+              {hasAnyData ? "Reload Demo Data" : "Load Demo Data"}
+            </button>
+            <button className="btn danger-outline" type="button" onClick={handleClearAll}>
+              Clear All Data
+            </button>
+          </section>
+        </main>
 
-          <FilterBar
-            search={state.search}
-            onSearchChange={(val) => dispatch({ type: "SET_SEARCH", payload: val })}
-            filterType={state.filterType}
-            onTypeChange={(val) => dispatch({ type: "SET_FILTER_TYPE", payload: val })}
-            filterCategory={state.filterCategory}
-            onCategoryChange={(val) => dispatch({ type: "SET_FILTER_CATEGORY", payload: val })}
-            sortBy={state.sortBy}
-            onSortChange={(val) => dispatch({ type: "SET_SORT_BY", payload: val })}
-            categories={categories}
-            count={filteredTransactions.length}
-          />
-
-          <TransactionList
-            transactions={filteredTransactions}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            currency={currency}
-          />
-        </section>
-
-        <InsightsPanel insights={insights} budgetCount={state.budgets.length} currency={currency} />
-
-        <section className="footer-actions">
-          <button className="btn ghost" type="button" onClick={handleLoadDemo}>
-            Load Demo Data
-          </button>
-          <button className="btn danger-outline" type="button" onClick={handleClearAll}>
-            Clear All Data
-          </button>
-        </section>
-      </main>
-
-      <div className={`toast ${state.toast ? "show" : ""}`} role="status">
-        {state.toast || ""}
+        <div className={`toast ${state.toast ? "show" : ""}`} role="status">
+          {state.toast || ""}
+        </div>
       </div>
-    </>
+    </div>
   );
 }
