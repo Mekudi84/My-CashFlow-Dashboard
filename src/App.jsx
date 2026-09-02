@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useFinanceData } from "./hooks/useFinanceData";
 import { useTheme } from "./hooks/useTheme";
 import { useLocalStorage } from "./hooks/useLocalStorage";
-import { useAuth } from "./contexts/AuthContext";
 import { CURRENCIES, DEFAULT_CURRENCY } from "./utils/currency";
 import TransactionForm from "./components/TransactionForm";
 import TransactionList from "./components/TransactionList";
@@ -17,14 +15,6 @@ import CurrencySelector from "./components/CurrencySelector";
 import ChartsPanel from "./components/ChartsPanel";
 import Sidebar from "./components/Sidebar";
 import ExpenseBreakdown from "./components/ExpenseBreakdown";
-import ProtectedRoute from "./components/ProtectedRoute";
-import SignIn from "./components/auth/SignIn";
-import SignUp from "./components/auth/SignUp";
-import VerifyOtp from "./components/auth/VerifyOtp";
-import ForgotPassword from "./components/auth/ForgotPassword";
-import ResetPassword from "./components/auth/ResetPassword";
-import SetupRequired from "./components/auth/SetupRequired";
-import AuthCallback from "./components/auth/AuthCallback";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -45,31 +35,13 @@ function scrollToSection(id) {
   if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function Dashboard() {
-  const {
-    state,
-    dispatch,
-    summary,
-    categories,
-    filteredTransactions,
-    budgetStats,
-    insights,
-    loading,
-    error,
-    addTransaction,
-    editTransaction,
-    deleteTransaction,
-    addBudget,
-    deleteBudget,
-    clearAll,
-    TODAY,
-  } = useFinanceData();
+export default function App() {
+  const { state, dispatch, summary, categories, filteredTransactions, budgetStats, insights, TODAY } =
+    useFinanceData();
   const { theme, toggleTheme } = useTheme();
-  const { user, signOut } = useAuth();
-  const [currency, setCurrency] = useLocalStorage("basseyflow_currency", DEFAULT_CURRENCY);
+  const [currency, setCurrency] = useLocalStorage("financeflow_currency", DEFAULT_CURRENCY);
   const [activeSection, setActiveSection] = useState("dashboard");
   const toastTimeout = useRef(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (state.toast) {
@@ -91,19 +63,14 @@ function Dashboard() {
   }, [state.editingId, dispatch]);
 
   const handleSubmitTransaction = useCallback(
-    async (data) => {
-      try {
-        if (state.editingId) {
-          await editTransaction({ ...data, id: state.editingId });
-        } else {
-          await addTransaction({ ...data });
-        }
-      } catch (err) {
-        dispatch({ type: "DISMISS_TOAST" });
-        alert(formatFinanceError(err));
+    (data) => {
+      if (state.editingId) {
+        dispatch({ type: "EDIT_TRANSACTION", payload: { ...data, id: state.editingId } });
+      } else {
+        dispatch({ type: "ADD_TRANSACTION", payload: { ...data, id: Date.now() } });
       }
     },
-    [state.editingId, addTransaction, editTransaction, dispatch]
+    [state.editingId, dispatch]
   );
 
   const handleEdit = useCallback(
@@ -115,49 +82,35 @@ function Dashboard() {
   );
 
   const handleDelete = useCallback(
-    async (id) => {
+    (id) => {
       if (!confirm("Delete this transaction?")) return;
-      try {
-        await deleteTransaction(id);
-      } catch (err) {
-        alert(formatFinanceError(err));
-      }
+      dispatch({ type: "DELETE_TRANSACTION", payload: id });
     },
-    [deleteTransaction]
+    [dispatch]
   );
 
   const handleAddBudget = useCallback(
-    async (budget) => {
-      try {
-        await addBudget(budget);
-      } catch (err) {
-        alert(formatFinanceError(err));
-      }
+    (budget) => {
+      dispatch({ type: "ADD_BUDGET", payload: budget });
     },
-    [addBudget]
+    [dispatch]
   );
 
   const handleDeleteBudget = useCallback(
-    async (id) => {
-      try {
-        await deleteBudget(id);
-      } catch (err) {
-        alert(formatFinanceError(err));
-      }
+    (id) => {
+      dispatch({ type: "DELETE_BUDGET", payload: id });
     },
-    [deleteBudget]
+    [dispatch]
   );
 
-  const handleClearAll = useCallback(async () => {
-    if (!confirm("Delete all your transactions, budgets and preferences?")) return;
-    try {
-      await clearAll();
-      localStorage.removeItem("basseyflow_currency");
-      localStorage.removeItem("basseyflow_theme");
-    } catch (err) {
-      alert(formatFinanceError(err));
-    }
-  }, [clearAll]);
+  const handleClearAll = useCallback(() => {
+    if (!confirm("Delete all transactions, budgets and saved preferences?")) return;
+    localStorage.removeItem("financeflow_transactions");
+    localStorage.removeItem("financeflow_budgets");
+    localStorage.removeItem("financeflow_theme");
+    localStorage.removeItem("financeflow_currency");
+    dispatch({ type: "CLEAR_ALL" });
+  }, [dispatch]);
 
   const handleClearFilters = useCallback(() => {
     dispatch({ type: "SET_SEARCH", payload: "" });
@@ -190,19 +143,9 @@ function Dashboard() {
     }
   }, []);
 
-  const handleSignOut = useCallback(async () => {
-    try {
-      await signOut();
-      navigate("/signin", { replace: true });
-    } catch (err) {
-      alert(err?.message || "Unable to sign out. Please try again.");
-    }
-  }, [signOut, navigate]);
-
   const greeting = useMemo(getGreeting, []);
   const monthYear = useMemo(getMonthYear, []);
   const currencySymbol = CURRENCIES[currency]?.symbol || CURRENCIES[DEFAULT_CURRENCY].symbol;
-  const firstName = (user?.user_metadata?.full_name || user?.email || "").split(/[\s@]/)[0] || "there";
 
   const editingTransaction = state.editingId
     ? state.transactions.find((t) => t.id === state.editingId) || null
@@ -211,18 +154,9 @@ function Dashboard() {
   const hasActiveFilters =
     state.search.trim() !== "" || state.filterType !== "all" || state.filterCategory !== "all";
 
-  if (loading) {
-    return (
-      <div className="auth-loading" role="status" aria-live="polite">
-        <div className="auth-spinner" aria-hidden="true" />
-        <p>Loading your secure dashboard…</p>
-      </div>
-    );
-  }
-
   return (
     <div className="app-shell">
-      <Sidebar active={activeSection} onSelect={handleNav} onSignOut={handleSignOut} user={user} />
+      <Sidebar active={activeSection} onSelect={handleNav} />
 
       <div className="app-main">
         <header className="topbar reveal" style={{ "--reveal-delay": "0ms" }}>
@@ -239,7 +173,7 @@ function Dashboard() {
               <span className="brand-tagline">Financial clarity · Smarter cash flow</span>
             </p>
             <h1>
-              {greeting}, <span className="user-name">{firstName}</span> <span aria-hidden="true">👋</span>
+              {greeting}, <span className="user-name">Unyime</span> <span aria-hidden="true">👋</span>
             </h1>
             <p className="subtitle">Here's your financial overview for {monthYear}.</p>
           </div>
@@ -250,24 +184,8 @@ function Dashboard() {
             </div>
             <CurrencySelector currency={currency} onChange={setCurrency} />
             <ThemeToggle theme={theme} onToggle={toggleTheme} />
-            <button
-              type="button"
-              className="icon-btn topbar-signout"
-              onClick={handleSignOut}
-              aria-label="Sign out"
-              title="Sign out"
-            >
-              ⎋
-            </button>
           </div>
         </header>
-
-        {error && (
-          <div className="demo-banner reveal" style={{ "--reveal-delay": "60ms" }} role="alert">
-            <span className="demo-badge" style={{ background: "var(--red)" }}>ERROR</span>
-            <p>{error}</p>
-          </div>
-        )}
 
         <main className="container">
           <div className="reveal" style={{ "--reveal-delay": "100ms" }}>
@@ -385,39 +303,5 @@ function Dashboard() {
         </div>
       </div>
     </div>
-  );
-}
-
-function formatFinanceError(err) {
-  const message = (err?.message || "").toLowerCase();
-  if (message.includes("row-level security") || message.includes("permission")) {
-    return "You don't have permission to modify this record.";
-  }
-  if (message.includes("network") || message.includes("fetch")) {
-    return "Network error. Please check your connection and try again.";
-  }
-  return err?.message || "Something went wrong. Please try again.";
-}
-
-export default function App() {
-  return (
-    <Routes>
-      <Route path="/setup" element={<SetupRequired />} />
-      <Route path="/signin" element={<SignIn />} />
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/forgot" element={<ForgotPassword />} />
-      <Route path="/verify" element={<VerifyOtp />} />
-      <Route path="/auth/callback" element={<AuthCallback />} />
-      <Route path="/auth/reset" element={<ResetPassword />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
   );
 }
