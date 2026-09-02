@@ -1,6 +1,8 @@
-# CashFlow — Personal Finance Dashboard
+# BasseyFlow — Personal Finance Dashboard
 
 A React + Vite personal finance dashboard built to track income, expenses, budgets, and spending insights with a polished, responsive UI.
+
+> **Financial clarity. Smarter cash flow.**
 
 ## Technologies
 

@@ -186,7 +186,7 @@ export default function App() {
       <div className="app-main">
         <header className="topbar reveal" style={{ "--reveal-delay": "0ms" }}>
           <div className="topbar-left">
-            <p className="eyebrow">COWRYWISE · FINANCE</p>
+            <p className="eyebrow">BASSEYFLOW · FINANCE</p>
             <h1>
               {greeting}, <span className="user-name">Unyime</span> <span aria-hidden="true">👋</span>
             </h1>
