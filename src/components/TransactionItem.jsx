@@ -12,13 +12,19 @@ export default function TransactionItem({ transaction, onEdit, onDelete, currenc
   }, [transaction.id]);
 
   const sign = transaction.type === "income" ? "+" : "-";
+  const initial = (transaction.description || transaction.category || "?").trim().charAt(0).toUpperCase();
 
   return (
     <article className="transaction" ref={ref}>
       <div className="transaction-main">
-        <div className="transaction-title">{escapeHtml(transaction.description)}</div>
-        <div className="transaction-meta">
-          {escapeHtml(transaction.category)} · {formatDate(transaction.date)}
+        <div className={`tx-icon ${transaction.type}`} aria-hidden="true">
+          {transaction.type === "income" ? "↗" : "↘"}
+        </div>
+        <div className="transaction-text">
+          <div className="transaction-title">{escapeHtml(transaction.description)}</div>
+          <div className="transaction-meta">
+            {escapeHtml(transaction.category)} · {formatDate(transaction.date)}
+          </div>
         </div>
       </div>
       <div className={`transaction-amount ${transaction.type}`}>
