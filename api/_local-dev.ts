@@ -15,6 +15,11 @@ import helmet from "helmet";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import health from "./health";
 import ready from "./ready";
+import register from "./auth/register";
+import login from "./auth/login";
+import refresh from "./auth/refresh";
+import logout from "./auth/logout";
+import me from "./auth/me";
 import { requestId, requestLogger } from "./_lib/request";
 import { notFoundHandler, errorHandler } from "./_lib/middleware";
 
@@ -37,12 +42,16 @@ app.use(requestLogger);
 
 app.get("/api/health", adapt(health));
 app.get("/api/ready", adapt(ready));
+app.post("/api/auth/register", adapt(register));
+app.post("/api/auth/login", adapt(login));
+app.post("/api/auth/refresh", adapt(refresh));
+app.post("/api/auth/logout", adapt(logout));
+app.get("/api/auth/me", adapt(me));
 
 app.use(notFoundHandler);
 app.use(errorHandler);
 
 const port = Number(process.env["PORT"] ?? 3001);
 app.listen(port, () => {
-  // eslint-disable-next-line no-console
   console.log(JSON.stringify({ ts: new Date().toISOString(), level: "info", msg: "api listening", port }));
 });
