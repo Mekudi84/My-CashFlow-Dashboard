@@ -1,0 +1,14 @@
+* text=auto eol=lf
+
+*.jsx  linguist-language=JavaScript
+*.tsx  linguist-language=TypeScript
+*.css  linguist-language=CSS
+
+package-lock.json binary
+yarn.lock       binary
+pnpm-lock.yaml  binary
+
+# Exclude generated/build artifacts from diff stats
+dist/            linguist-generated=true
+coverage/        linguist-generated=true
+api/_lib/gen/    linguist-generated=true

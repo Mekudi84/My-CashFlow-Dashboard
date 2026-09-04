@@ -159,6 +159,15 @@ export default function App() {
       <Sidebar active={activeSection} onSelect={handleNav} />
 
       <div className="app-main">
+        <div className="legacy-banner" role="status">
+          <span>
+            You are viewing the <strong>legacy v1 dashboard</strong>. The new
+            dashboard is at <a href="/v2/overview">/v2/overview</a>.
+          </span>
+          <a href="/v2/overview" className="legacy-banner-cta">
+            Open new dashboard →
+          </a>
+        </div>
         <header className="topbar reveal" style={{ "--reveal-delay": "0ms" }}>
           <div className="topbar-left">
             <div className="topbar-brand">
