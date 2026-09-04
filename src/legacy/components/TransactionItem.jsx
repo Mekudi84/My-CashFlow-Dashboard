@@ -12,7 +12,10 @@ export default function TransactionItem({ transaction, onEdit, onDelete, currenc
   }, [transaction.id]);
 
   const sign = transaction.type === "income" ? "+" : "-";
-  const initial = (transaction.description || transaction.category || "?").trim().charAt(0).toUpperCase();
+  const initial = (transaction.description || transaction.category || "?")
+    .trim()
+    .charAt(0)
+    .toUpperCase();
 
   return (
     <article className="transaction" ref={ref}>
@@ -28,17 +31,29 @@ export default function TransactionItem({ transaction, onEdit, onDelete, currenc
         </div>
       </div>
       <div className={`transaction-amount ${transaction.type}`}>
-        {sign}{formatMoney(Number(transaction.amount), currency)}
+        {sign}
+        {formatMoney(Number(transaction.amount), currency)}
       </div>
       <div className="actions">
-        <button className="action-btn" type="button" onClick={() => onEdit(transaction.id)}>Edit</button>
-        <button className="action-btn delete" type="button" onClick={() => onDelete(transaction.id)}>Delete</button>
+        <button className="action-btn" type="button" onClick={() => onEdit(transaction.id)}>
+          Edit
+        </button>
+        <button
+          className="action-btn delete"
+          type="button"
+          onClick={() => onDelete(transaction.id)}
+        >
+          Delete
+        </button>
       </div>
     </article>
   );
 }
 
 function formatDate(date) {
-  return new Intl.DateTimeFormat("en-US", { day: "2-digit", month: "short", year: "numeric" })
-    .format(new Date(`${date}T00:00:00`));
+  return new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(`${date}T00:00:00`));
 }

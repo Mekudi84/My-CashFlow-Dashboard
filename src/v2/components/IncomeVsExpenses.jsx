@@ -37,7 +37,9 @@ export default function IncomeVsExpenses({ income, expenses, loading }) {
             <div className="ft-ive-label">
               <span className="ft-ive-dot expense" /> Money Out
             </div>
-            <div className="ft-ive-value">{formatMoney(expenses, { maximumFractionDigits: 0 })}</div>
+            <div className="ft-ive-value">
+              {formatMoney(expenses, { maximumFractionDigits: 0 })}
+            </div>
           </div>
           <div className="ft-ive-bar">
             <div className="ft-ive-fill expense" style={{ width: `${expensePct}%` }} />
@@ -46,7 +48,8 @@ export default function IncomeVsExpenses({ income, expenses, loading }) {
           <div className="ft-ive-net">
             <span>Net this month</span>
             <strong className={net >= 0 ? "is-up" : "is-down"}>
-              {net >= 0 ? "+" : "−"}{formatMoney(Math.abs(net), { maximumFractionDigits: 0 })}
+              {net >= 0 ? "+" : "−"}
+              {formatMoney(Math.abs(net), { maximumFractionDigits: 0 })}
             </strong>
           </div>
         </>

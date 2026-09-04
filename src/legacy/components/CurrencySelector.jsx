@@ -18,7 +18,9 @@ export default function CurrencySelector({ currency, onChange }) {
             </option>
           ))}
         </select>
-        <span className="currency-arrow" aria-hidden="true">▼</span>
+        <span className="currency-arrow" aria-hidden="true">
+          ▼
+        </span>
       </div>
     </div>
   );

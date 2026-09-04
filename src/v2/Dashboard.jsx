@@ -21,11 +21,17 @@ function DashboardInner() {
   const navigate = useNavigate();
   const location = useLocation();
   const {
-    transactions, budgets, savingsGoals, insights, categories,
-    addTransaction, updateTransaction, deleteTransaction,
+    transactions,
+    budgets,
+    savingsGoals,
+    insights,
+    categories,
+    addTransaction,
+    updateTransaction,
+    deleteTransaction,
   } = useStore();
 
-  const active = (location.pathname.replace("/v2", "").replace(/^\//, "") || "overview");
+  const active = location.pathname.replace("/v2", "").replace(/^\//, "") || "overview";
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -44,7 +50,9 @@ function DashboardInner() {
   useEffect(() => {
     if (mobileOpen) {
       document.body.style.overflow = "hidden";
-      return () => { document.body.style.overflow = ""; };
+      return () => {
+        document.body.style.overflow = "";
+      };
     }
     return undefined;
   }, [mobileOpen]);
@@ -68,15 +76,17 @@ function DashboardInner() {
 
   const categoryTotals = useMemo(() => {
     const totals = {};
-    filtered.filter((t) => t.type === "expense").forEach((t) => {
-      totals[t.category] = (totals[t.category] || 0) + t.amount;
-    });
+    filtered
+      .filter((t) => t.type === "expense")
+      .forEach((t) => {
+        totals[t.category] = (totals[t.category] || 0) + t.amount;
+      });
     return totals;
   }, [filtered]);
 
   const totalExpenses = useMemo(
     () => Object.values(categoryTotals).reduce((s, v) => s + v, 0),
-    [categoryTotals]
+    [categoryTotals],
   );
 
   const largestCategory = useMemo(() => {
@@ -106,7 +116,9 @@ function DashboardInner() {
   };
 
   return (
-    <div className={`ft-shell ${collapsed ? "is-collapsed" : ""} ${mobileOpen ? "has-mobile" : ""}`}>
+    <div
+      className={`ft-shell ${collapsed ? "is-collapsed" : ""} ${mobileOpen ? "has-mobile" : ""}`}
+    >
       <Sidebar
         active={active}
         onSelect={handleNav}
@@ -129,7 +141,9 @@ function DashboardInner() {
             <div>
               <p className="ft-eyebrow">FINANCE OVERVIEW</p>
               <h1>Hello, here’s your money snapshot</h1>
-              <p className="ft-subtitle">Track your money and stay on top of your financial goals.</p>
+              <p className="ft-subtitle">
+                Track your money and stay on top of your financial goals.
+              </p>
             </div>
           </header>
 
@@ -137,7 +151,11 @@ function DashboardInner() {
 
           <div className="ft-row-2">
             <CashFlowChart range={dateRange} onRange={setDateRange} loading={loading} />
-            <IncomeVsExpenses income={summary.monthlyIncome} expenses={summary.monthlyExpenses} loading={loading} />
+            <IncomeVsExpenses
+              income={summary.monthlyIncome}
+              expenses={summary.monthlyExpenses}
+              loading={loading}
+            />
           </div>
 
           <div className="ft-row-2">
@@ -172,11 +190,7 @@ function DashboardInner() {
 
           <div className="ft-row-2">
             <SavingsGoals goals={savingsGoals} loading={loading} />
-            <MonthlySummary
-              summary={summary}
-              largestCategory={largestCategory}
-              loading={loading}
-            />
+            <MonthlySummary summary={summary} largestCategory={largestCategory} loading={loading} />
           </div>
 
           <FinancialInsights insights={insights} loading={loading} />
@@ -185,11 +199,7 @@ function DashboardInner() {
 
       {mobileOpen && <div className="ft-mobile-overlay" onClick={() => setMobileOpen(false)} />}
 
-      <AddTransactionModal
-        open={showAdd}
-        onClose={() => setShowAdd(false)}
-        onSubmit={handleAdd}
-      />
+      <AddTransactionModal open={showAdd} onClose={() => setShowAdd(false)} onSubmit={handleAdd} />
 
       <TransactionDrawer
         transaction={selected}

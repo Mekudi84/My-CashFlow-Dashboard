@@ -1,5 +1,11 @@
 import { createContext, useContext, useMemo, useState, useCallback } from "react";
-import { MOCK_TRANSACTIONS, MOCK_BUDGETS, MOCK_SAVINGS_GOALS, MOCK_INSIGHTS, CATEGORIES } from "./data/mockData";
+import {
+  MOCK_TRANSACTIONS,
+  MOCK_BUDGETS,
+  MOCK_SAVINGS_GOALS,
+  MOCK_INSIGHTS,
+  CATEGORIES,
+} from "./data/mockData";
 
 const StoreContext = createContext(null);
 
@@ -37,7 +43,16 @@ export function StoreProvider({ children }) {
       deleteTransaction,
       updateSavingsGoal,
     }),
-    [transactions, budgets, savingsGoals, insights, addTransaction, updateTransaction, deleteTransaction, updateSavingsGoal]
+    [
+      transactions,
+      budgets,
+      savingsGoals,
+      insights,
+      addTransaction,
+      updateTransaction,
+      deleteTransaction,
+      updateSavingsGoal,
+    ],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

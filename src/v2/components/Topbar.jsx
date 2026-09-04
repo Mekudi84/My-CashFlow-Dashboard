@@ -14,7 +14,12 @@ export default function Topbar({ onOpenAdd, onMenu, query, onQuery, onDateRange,
   return (
     <header className={`ft-topbar ${scrolled ? "is-scrolled" : ""}`}>
       <div className="ft-topbar-left">
-        <button type="button" className="ft-icon-btn ft-menu-btn" onClick={onMenu} aria-label="Open menu">
+        <button
+          type="button"
+          className="ft-icon-btn ft-menu-btn"
+          onClick={onMenu}
+          aria-label="Open menu"
+        >
           <Icon name="menu" size={18} />
         </button>
         <label className="ft-search">

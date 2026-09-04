@@ -2,7 +2,9 @@ import { formatMoney } from "../utils/format";
 
 export default function MonthlySummary({ summary, largestCategory, loading }) {
   const { monthlyIncome, monthlyExpenses, totalSavings, totalBalance } = summary;
-  const savingsRate = monthlyIncome ? Math.max(0, ((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100) : 0;
+  const savingsRate = monthlyIncome
+    ? Math.max(0, ((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100)
+    : 0;
   const budgetRemaining = Math.max(0, totalSavings - 0);
 
   if (loading) {
@@ -20,12 +22,30 @@ export default function MonthlySummary({ summary, largestCategory, loading }) {
   }
 
   const items = [
-    { label: "Total income", value: formatMoney(monthlyIncome, { maximumFractionDigits: 0 }), tone: "income" },
-    { label: "Total expenses", value: formatMoney(monthlyExpenses, { maximumFractionDigits: 0 }), tone: "expense" },
-    { label: "Money saved", value: formatMoney(Math.max(0, monthlyIncome - monthlyExpenses), { maximumFractionDigits: 0 }), tone: "savings" },
+    {
+      label: "Total income",
+      value: formatMoney(monthlyIncome, { maximumFractionDigits: 0 }),
+      tone: "income",
+    },
+    {
+      label: "Total expenses",
+      value: formatMoney(monthlyExpenses, { maximumFractionDigits: 0 }),
+      tone: "expense",
+    },
+    {
+      label: "Money saved",
+      value: formatMoney(Math.max(0, monthlyIncome - monthlyExpenses), {
+        maximumFractionDigits: 0,
+      }),
+      tone: "savings",
+    },
     { label: "Savings rate", value: `${savingsRate.toFixed(1)}%`, tone: "savings" },
     { label: "Largest category", value: largestCategory || "—", tone: "neutral" },
-    { label: "Total balance", value: formatMoney(totalBalance, { maximumFractionDigits: 0 }), tone: "primary" },
+    {
+      label: "Total balance",
+      value: formatMoney(totalBalance, { maximumFractionDigits: 0 }),
+      tone: "primary",
+    },
   ];
 
   return (
@@ -38,7 +58,11 @@ export default function MonthlySummary({ summary, largestCategory, loading }) {
       </header>
       <ul className="ft-summary-list">
         {items.map((it, i) => (
-          <li key={it.label} className={`ft-summary-item tone-${it.tone}`} style={{ "--row-index": i }}>
+          <li
+            key={it.label}
+            className={`ft-summary-item tone-${it.tone}`}
+            style={{ "--row-index": i }}
+          >
             <span>{it.label}</span>
             <strong>{it.value}</strong>
           </li>

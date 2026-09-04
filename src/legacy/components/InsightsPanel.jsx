@@ -20,7 +20,9 @@ export default function InsightsPanel({ insights, budgetCount, currency }) {
         </div>
         <div className="insight">
           <span>Average expense</span>
-          <strong>{expenseCount > 0 ? formatMoney(average, currency) : formatMoney(0, currency)}</strong>
+          <strong>
+            {expenseCount > 0 ? formatMoney(average, currency) : formatMoney(0, currency)}
+          </strong>
         </div>
         <div className="insight">
           <span>Budget categories</span>

@@ -1,6 +1,12 @@
 import TransactionItem from "./TransactionItem";
 
-export default function TransactionList({ transactions, onEdit, onDelete, hasActiveFilters, onClearFilters }) {
+export default function TransactionList({
+  transactions,
+  onEdit,
+  onDelete,
+  hasActiveFilters,
+  onClearFilters,
+}) {
   if (transactions.length === 0) {
     return (
       <div className="empty-state">

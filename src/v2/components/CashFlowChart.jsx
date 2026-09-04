@@ -73,8 +73,16 @@ export default function CashFlowChart({ range, onRange, loading }) {
               const y = PADDING_TOP + innerH - (v / max) * innerH;
               return (
                 <g key={i}>
-                  <line x1={PADDING_X} x2={WIDTH - PADDING_X} y1={y} y2={y} className="ft-chart-grid" />
-                  <text x={PADDING_X - 8} y={y + 3} className="ft-chart-axis">{formatMoney(v, { maximumFractionDigits: 0 })}</text>
+                  <line
+                    x1={PADDING_X}
+                    x2={WIDTH - PADDING_X}
+                    y1={y}
+                    y2={y}
+                    className="ft-chart-grid"
+                  />
+                  <text x={PADDING_X - 8} y={y + 3} className="ft-chart-axis">
+                    {formatMoney(v, { maximumFractionDigits: 0 })}
+                  </text>
                 </g>
               );
             })}
@@ -110,7 +118,9 @@ export default function CashFlowChart({ range, onRange, loading }) {
                     className="ft-bar ft-bar-expense"
                     style={{ transitionDelay: delay }}
                   />
-                  <text x={cx} y={HEIGHT - 10} textAnchor="middle" className="ft-chart-label">{d.label}</text>
+                  <text x={cx} y={HEIGHT - 10} textAnchor="middle" className="ft-chart-label">
+                    {d.label}
+                  </text>
                 </g>
               );
             })}

@@ -16,5 +16,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="*" element={<Navigate to="/v2/overview" replace />} />
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>
+</React.StrictMode>,
 );

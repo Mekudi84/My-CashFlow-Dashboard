@@ -9,11 +9,15 @@ function CircularProgress({ value }) {
     <svg className="ft-circ" viewBox="0 0 64 64" aria-hidden="true">
       <circle cx="32" cy="32" r={R} className="ft-circ-track" />
       <circle
-        cx="32" cy="32" r={R}
+        cx="32"
+        cy="32"
+        r={R}
         className="ft-circ-bar"
         style={{ strokeDasharray: C, strokeDashoffset: offset }}
       />
-      <text x="32" y="36" textAnchor="middle" className="ft-circ-text">{Math.round(value)}%</text>
+      <text x="32" y="36" textAnchor="middle" className="ft-circ-text">
+        {Math.round(value)}%
+      </text>
     </svg>
   );
 }
@@ -31,7 +35,9 @@ export default function SavingsGoals({ goals, loading }) {
 
       {loading ? (
         <div className="ft-goal-grid">
-          {[0, 1, 2].map((i) => <div className="ft-skel skel-goal" key={i} />)}
+          {[0, 1, 2].map((i) => (
+            <div className="ft-skel skel-goal" key={i} />
+          ))}
         </div>
       ) : (
         <ul className="ft-goal-grid">
@@ -60,9 +66,11 @@ export default function SavingsGoals({ goals, loading }) {
                     <span> / {formatMoney(g.target, { maximumFractionDigits: 0 })}</span>
                   </div>
                   <div className="ft-goal-target">
-                    {complete
-                      ? <span className="ft-goal-tag is-complete">Goal reached</span>
-                      : <>Target {formatDate(g.targetDate)}</>}
+                    {complete ? (
+                      <span className="ft-goal-tag is-complete">Goal reached</span>
+                    ) : (
+                      <>Target {formatDate(g.targetDate)}</>
+                    )}
                   </div>
                 </div>
                 <div className="ft-goal-remaining">

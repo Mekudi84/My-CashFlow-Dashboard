@@ -1,6 +1,8 @@
 export default function ExpenseBreakdown({ insights, currency }) {
   const totals = insights?.categoryTotals || {};
-  const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]).slice(0, 6);
+  const entries = Object.entries(totals)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
   const total = entries.reduce((sum, [, value]) => sum + value, 0);
 
   if (entries.length === 0) {
