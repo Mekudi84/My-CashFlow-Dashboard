@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Icon from "./Icon";
 import type { DateRangeKey } from "@/types";
+import { useAuthStore } from "@/store/auth";
 
 interface TopbarProps {
   query: string;
@@ -13,6 +14,8 @@ interface TopbarProps {
 
 export default function Topbar({ query, onQuery, dateRange, onDateRange, onOpenAdd, onMenu }: TopbarProps) {
   const [scrolled, setScrolled] = useState(false);
+  const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4);
@@ -20,6 +23,11 @@ export default function Topbar({ query, onQuery, dateRange, onDateRange, onOpenA
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const handleLogout = async () => {
+    await logout();
+    window.location.assign("/login");
+  };
 
   return (
     <header className={`ft-topbar ${scrolled ? "is-scrolled" : ""}`}>
@@ -60,8 +68,14 @@ export default function Topbar({ query, onQuery, dateRange, onDateRange, onOpenA
           <Icon name="bell" size={18} />
           <span className="ft-dot" aria-hidden="true" />
         </button>
-        <button type="button" className="ft-avatar" aria-label="Account">
-          <span>U</span>
+        <button
+          type="button"
+          className="ft-avatar"
+          aria-label={user ? `Account menu for ${user.name}` : "Account menu"}
+          onClick={handleLogout}
+          title="Sign out"
+        >
+          <span>{user?.name?.[0]?.toUpperCase() ?? "U"}</span>
         </button>
         <button type="button" className="ft-btn ft-btn-primary" onClick={onOpenAdd}>
           <Icon name="plus" size={16} />

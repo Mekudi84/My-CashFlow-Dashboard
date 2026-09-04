@@ -1,10 +1,14 @@
+import type { CurrencyCode } from "./currency";
+
 export interface User {
   id: string;
   email: string;
   name: string;
-  preferredCurrency: import("./currency").CurrencyCode;
+  preferredCurrency: CurrencyCode;
   createdAt: string;
 }
+
+export type PublicUser = User;
 
 export interface AuthSession {
   user: User;
