@@ -12,6 +12,6 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["vite.config.js", "eslint.config.js"],
+  "include": ["vite.config.js", "eslint.config.js", "drizzle.config.ts"],
   "exclude": ["node_modules", "dist", "coverage"]
 }

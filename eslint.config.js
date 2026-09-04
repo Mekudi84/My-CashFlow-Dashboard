@@ -6,7 +6,13 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["dist", "node_modules", "coverage", "**/*.tsbuildinfo"],
+    ignores: [
+      "dist",
+      "node_modules",
+      "coverage",
+      "**/*.tsbuildinfo",
+      "db/migrations",
+    ],
   },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
@@ -25,7 +31,10 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true },
+      ],
       "@typescript-eslint/no-unused-vars": [
         "warn",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
@@ -37,7 +46,6 @@ export default tseslint.config(
   {
     files: ["src/legacy/**/*.{js,jsx}"],
     rules: {
-      // Legacy code preserved for /legacy route. Avoid noisy churn.
       "@typescript-eslint/no-unused-vars": "off",
       "no-unused-vars": "off",
     },
