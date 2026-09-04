@@ -1,5 +1,15 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": "vite"
+  "framework": "vite",
+  "functions": {
+    "api/**/*.ts": {
+      "maxDuration": 10,
+      "memory": 256
+    }
+  },
+  "rewrites": [
+    { "source": "/(api|favicon.svg|basseyflow-logo.svg|assets)/(.*)", "destination": "/$1/$2" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
