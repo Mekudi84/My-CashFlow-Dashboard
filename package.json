@@ -6,7 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "echo \"(lint) wired in Phase 1\" && exit 0",
+    "typecheck": "echo \"(typecheck) wired in Phase 2\" && exit 0",
+    "test": "echo \"(test) wired in Phase 8\" && exit 0",
+    "test:e2e": "echo \"(e2e) wired in Phase 8\" && exit 0",
+    "format": "echo \"(format) wired in Phase 1\" && exit 0"
   },
   "dependencies": {
     "react": "^18.2.0",
