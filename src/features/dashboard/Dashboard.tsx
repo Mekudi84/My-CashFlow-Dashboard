@@ -119,8 +119,14 @@ function DashboardLayout() {
     spendingQ.isLoading ||
     cashFlowQ.isLoading;
 
-  const transactions = useMemo(() => transactionsQ.data ?? [], [transactionsQ.data]);
-  const categories = useMemo(() => categoriesQ.data ?? [], [categoriesQ.data]);
+  const transactions = useMemo<Transaction[]>(
+    () => transactionsQ.data ?? [],
+    [transactionsQ.data],
+  );
+  const categories = useMemo(
+    () => categoriesQ.data ?? [],
+    [categoriesQ.data],
+  );
   const categoryById = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories]);
 
   const filtered = useMemo(
