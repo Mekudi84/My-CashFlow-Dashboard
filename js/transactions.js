@@ -1,9 +1,11 @@
 export const getIncome = (transactions) =>
-  transactions.filter(({ type }) => type === "income")
+  transactions
+    .filter(({ type }) => type === "income")
     .reduce((total, { amount }) => total + Number(amount), 0);
 
 export const getExpenses = (transactions) =>
-  transactions.filter(({ type }) => type === "expense")
+  transactions
+    .filter(({ type }) => type === "expense")
     .reduce((total, { amount }) => total + Number(amount), 0);
 
 export const getBalance = (transactions) => getIncome(transactions) - getExpenses(transactions);
@@ -35,9 +37,7 @@ export const sortTransactions = (transactions, sortBy) => {
 
 export const filterTransactions = (transactions, search, type, category) =>
   transactions.filter((transaction) => {
-    const matchesSearch = transaction.description
-      .toLowerCase()
-      .includes(search.toLowerCase());
+    const matchesSearch = transaction.description.toLowerCase().includes(search.toLowerCase());
     const matchesType = type === "all" || transaction.type === type;
     const matchesCategory = category === "all" || transaction.category === category;
     return matchesSearch && matchesType && matchesCategory;

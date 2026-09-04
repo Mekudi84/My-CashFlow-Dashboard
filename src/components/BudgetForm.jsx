@@ -49,8 +49,14 @@ export default function BudgetForm({ onAddBudget }) {
           onChange={(e) => setLimit(e.target.value)}
         />
       </label>
-      <button className="btn secondary" type="submit">Set Budget</button>
-      {message && <p className="form-message" style={{ gridColumn: "1 / -1" }}>{message}</p>}
+      <button className="btn secondary" type="submit">
+        Set Budget
+      </button>
+      {message && (
+        <p className="form-message" style={{ gridColumn: "1 / -1" }}>
+          {message}
+        </p>
+      )}
     </form>
   );
 }

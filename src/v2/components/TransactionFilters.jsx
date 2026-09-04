@@ -15,9 +15,7 @@ const TYPES = [
 export default function TransactionFilters({ filters, categories, onChange, onReset }) {
   const update = (patch) => onChange({ ...filters, ...patch });
   const hasActive =
-    filters.type !== "all" ||
-    filters.category !== "all" ||
-    filters.status !== "all";
+    filters.type !== "all" || filters.category !== "all" || filters.status !== "all";
 
   return (
     <section className="ft-filters" aria-label="Transaction filters">
@@ -48,7 +46,9 @@ export default function TransactionFilters({ filters, categories, onChange, onRe
         >
           <option value="all">All categories</option>
           {categories.map((c) => (
-            <option key={c} value={c}>{c}</option>
+            <option key={c} value={c}>
+              {c}
+            </option>
           ))}
         </select>
       </label>

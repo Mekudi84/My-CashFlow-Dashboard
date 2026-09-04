@@ -49,7 +49,8 @@ export default function AddTransactionModal({ open, onClose, onSubmit }) {
     e.preventDefault();
     const value = parseFloat(amount);
     if (!name.trim()) return setError("Please enter a transaction name.");
-    if (!Number.isFinite(value) || value <= 0) return setError("Please enter a valid amount greater than zero.");
+    if (!Number.isFinite(value) || value <= 0)
+      return setError("Please enter a valid amount greater than zero.");
     if (!date) return setError("Please choose a date.");
     onSubmit({
       name: name.trim(),
@@ -114,7 +115,9 @@ export default function AddTransactionModal({ open, onClose, onSubmit }) {
               Category
               <select value={category} onChange={(e) => setCategory(e.target.value)}>
                 {CATEGORIES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </select>
             </label>
@@ -153,11 +156,19 @@ export default function AddTransactionModal({ open, onClose, onSubmit }) {
             />
           </label>
 
-          {error && <div className="ft-modal-error" role="alert">{error}</div>}
+          {error && (
+            <div className="ft-modal-error" role="alert">
+              {error}
+            </div>
+          )}
 
           <footer className="ft-modal-foot">
-            <button type="button" className="ft-btn ft-btn-ghost" onClick={onClose}>Cancel</button>
-            <button type="submit" className="ft-btn ft-btn-primary">Add transaction</button>
+            <button type="button" className="ft-btn ft-btn-ghost" onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" className="ft-btn ft-btn-primary">
+              Add transaction
+            </button>
           </footer>
         </form>
       </div>

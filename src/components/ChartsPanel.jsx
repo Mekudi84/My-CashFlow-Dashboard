@@ -110,10 +110,27 @@ export default function ChartsPanel({ transactions, currency = "NGN" }) {
             />
             <Legend
               iconType="circle"
-              wrapperStyle={{ paddingTop: 14, fontSize: ".82rem", fontWeight: 600, color: "var(--muted)" }}
+              wrapperStyle={{
+                paddingTop: 14,
+                fontSize: ".82rem",
+                fontWeight: 600,
+                color: "var(--muted)",
+              }}
             />
-            <Bar dataKey="income" name="Income" fill="var(--green)" radius={[6, 6, 0, 0]} maxBarSize={28} />
-            <Bar dataKey="expenses" name="Expenses" fill="var(--red)" radius={[6, 6, 0, 0]} maxBarSize={28} />
+            <Bar
+              dataKey="income"
+              name="Income"
+              fill="var(--green)"
+              radius={[6, 6, 0, 0]}
+              maxBarSize={28}
+            />
+            <Bar
+              dataKey="expenses"
+              name="Expenses"
+              fill="var(--red)"
+              radius={[6, 6, 0, 0]}
+              maxBarSize={28}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>

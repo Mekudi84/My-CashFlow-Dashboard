@@ -1,10 +1,21 @@
 import {
-  loadTransactions, saveTransactions, loadBudgets, saveBudgets,
-  loadTheme, saveTheme, clearStoredData
+  loadTransactions,
+  saveTransactions,
+  loadBudgets,
+  saveBudgets,
+  loadTheme,
+  saveTheme,
+  clearStoredData,
 } from "./storage.js";
 import {
-  getIncome, getExpenses, getBalance, getSavingsRate,
-  getCategoryExpenses, filterTransactions, sortTransactions, findTransaction
+  getIncome,
+  getExpenses,
+  getBalance,
+  getSavingsRate,
+  getCategoryExpenses,
+  filterTransactions,
+  sortTransactions,
+  findTransaction,
 } from "./transactions.js";
 import { getBudgetSpent, getBudgetStatus } from "./budget.js";
 
@@ -47,15 +58,16 @@ const elements = {
   toast: $("#toast"),
   insightsContent: $("#insightsContent"),
   loadDemo: $("#loadDemo"),
-  clearData: $("#clearData")
+  clearData: $("#clearData"),
 };
 
 const formatMoney = (amount) =>
   new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(amount);
 
 const formatDate = (date) =>
-  new Intl.DateTimeFormat("en-NG", { day: "2-digit", month: "short", year: "numeric" })
-    .format(new Date(`${date}T00:00:00`));
+  new Intl.DateTimeFormat("en-NG", { day: "2-digit", month: "short", year: "numeric" }).format(
+    new Date(`${date}T00:00:00`),
+  );
 
 const today = () => new Date().toISOString().split("T")[0];
 
@@ -66,7 +78,7 @@ const showToast = (message) => {
 };
 
 const clearErrors = () => {
-  document.querySelectorAll(".error").forEach((element) => element.textContent = "");
+  document.querySelectorAll(".error").forEach((element) => (element.textContent = ""));
 };
 
 const validateTransaction = () => {
@@ -134,16 +146,17 @@ const renderTransactions = () => {
     transactions,
     elements.search.value,
     elements.filterType.value,
-    elements.filterCategory.value
+    elements.filterCategory.value,
   );
   const sorted = sortTransactions(filtered, elements.sortBy.value);
 
   elements.count.textContent = `${sorted.length} ${sorted.length === 1 ? "item" : "items"}`;
   elements.emptyState.style.display = sorted.length ? "none" : "block";
 
-  elements.transactionList.innerHTML = sorted.map((transaction) => {
-    const sign = transaction.type === "income" ? "+" : "-";
-    return `
+  elements.transactionList.innerHTML = sorted
+    .map((transaction) => {
+      const sign = transaction.type === "income" ? "+" : "-";
+      return `
       <article class="transaction">
         <div class="transaction-main">
           <div class="transaction-title">${escapeHtml(transaction.description)}</div>
@@ -156,18 +169,21 @@ const renderTransactions = () => {
         </div>
       </article>
     `;
-  }).join("");
+    })
+    .join("");
 };
 
 const renderBudgets = () => {
-  elements.budgetList.innerHTML = budgets.length ? budgets.map((budget) => {
-    const spent = getBudgetSpent(transactions, budget.category);
-    const percent = budget.limit ? (spent / budget.limit) * 100 : 0;
-    const width = Math.min(percent, 100);
-    const status = getBudgetStatus(budget.limit, spent);
-    const remaining = budget.limit - spent;
+  elements.budgetList.innerHTML = budgets.length
+    ? budgets
+        .map((budget) => {
+          const spent = getBudgetSpent(transactions, budget.category);
+          const percent = budget.limit ? (spent / budget.limit) * 100 : 0;
+          const width = Math.min(percent, 100);
+          const status = getBudgetStatus(budget.limit, spent);
+          const remaining = budget.limit - spent;
 
-    return `
+          return `
       <div class="budget-item">
         <div class="budget-top">
           <strong>${escapeHtml(budget.category)}</strong>
@@ -183,7 +199,9 @@ const renderBudgets = () => {
         </div>
       </div>
     `;
-  }).join("") : `<p class="form-message">No budgets created yet.</p>`;
+        })
+        .join("")
+    : `<p class="form-message">No budgets created yet.</p>`;
 };
 
 const renderInsights = () => {
@@ -223,12 +241,13 @@ const render = () => {
   renderInsights();
 };
 
-const escapeHtml = (value) => String(value)
-  .replaceAll("&", "&amp;")
-  .replaceAll("<", "&lt;")
-  .replaceAll(">", "&gt;")
-  .replaceAll('"', "&quot;")
-  .replaceAll("'", "&#039;");
+const escapeHtml = (value) =>
+  String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 
 elements.form.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -240,13 +259,11 @@ elements.form.addEventListener("submit", (event) => {
     amount: Number(elements.amount.value),
     type: elements.type.value,
     category: elements.category.value,
-    date: elements.date.value
+    date: elements.date.value,
   };
 
   if (editingId) {
-    transactions = transactions.map((item) =>
-      item.id === editingId ? transaction : item
-    );
+    transactions = transactions.map((item) => (item.id === editingId ? transaction : item));
     showToast("Transaction updated.");
   } else {
     transactions = [transaction, ...transactions];
@@ -288,8 +305,9 @@ elements.transactionList.addEventListener("click", (event) => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-[elements.search, elements.filterType, elements.filterCategory, elements.sortBy]
-  .forEach((element) => element.addEventListener("input", renderTransactions));
+[elements.search, elements.filterType, elements.filterCategory, elements.sortBy].forEach(
+  (element) => element.addEventListener("input", renderTransactions),
+);
 
 elements.budgetForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -305,7 +323,7 @@ elements.budgetForm.addEventListener("submit", (event) => {
 
   if (existing) {
     budgets = budgets.map((budget) =>
-      budget.category === category ? { ...budget, limit } : budget
+      budget.category === category ? { ...budget, limit } : budget,
     );
     showToast("Budget updated.");
   } else {
@@ -340,17 +358,59 @@ elements.themeToggle.addEventListener("click", () => {
 elements.loadDemo.addEventListener("click", () => {
   const demoDate = today();
   transactions = [
-    { id: 1, description: "Monthly Salary", amount: 250000, type: "income", category: "Salary", date: demoDate },
-    { id: 2, description: "Freelance Website", amount: 85000, type: "income", category: "Freelance", date: demoDate },
-    { id: 3, description: "House Rent", amount: 70000, type: "expense", category: "Rent", date: demoDate },
-    { id: 4, description: "Groceries", amount: 32000, type: "expense", category: "Food", date: demoDate },
-    { id: 5, description: "Transport", amount: 15000, type: "expense", category: "Transport", date: demoDate },
-    { id: 6, description: "Online Course", amount: 18000, type: "expense", category: "Education", date: demoDate }
+    {
+      id: 1,
+      description: "Monthly Salary",
+      amount: 250000,
+      type: "income",
+      category: "Salary",
+      date: demoDate,
+    },
+    {
+      id: 2,
+      description: "Freelance Website",
+      amount: 85000,
+      type: "income",
+      category: "Freelance",
+      date: demoDate,
+    },
+    {
+      id: 3,
+      description: "House Rent",
+      amount: 70000,
+      type: "expense",
+      category: "Rent",
+      date: demoDate,
+    },
+    {
+      id: 4,
+      description: "Groceries",
+      amount: 32000,
+      type: "expense",
+      category: "Food",
+      date: demoDate,
+    },
+    {
+      id: 5,
+      description: "Transport",
+      amount: 15000,
+      type: "expense",
+      category: "Transport",
+      date: demoDate,
+    },
+    {
+      id: 6,
+      description: "Online Course",
+      amount: 18000,
+      type: "expense",
+      category: "Education",
+      date: demoDate,
+    },
   ];
   budgets = [
     { id: 101, category: "Food", limit: 50000 },
     { id: 102, category: "Transport", limit: 30000 },
-    { id: 103, category: "Entertainment", limit: 20000 }
+    { id: 103, category: "Entertainment", limit: 20000 },
   ];
   saveTransactions(transactions);
   saveBudgets(budgets);

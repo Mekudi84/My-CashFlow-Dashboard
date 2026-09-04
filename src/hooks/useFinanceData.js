@@ -47,7 +47,7 @@ function financeReducer(state, action) {
       };
     case "EDIT_TRANSACTION": {
       const updated = state.transactions.map((t) =>
-        t.id === action.payload.id ? action.payload : t
+        t.id === action.payload.id ? action.payload : t,
       );
       return { ...state, transactions: updated, editingId: null, toast: "Transaction updated." };
     }
@@ -62,7 +62,7 @@ function financeReducer(state, action) {
       const existing = state.budgets.find((b) => b.category === action.payload.category);
       if (existing) {
         const updated = state.budgets.map((b) =>
-          b.category === action.payload.category ? { ...b, limit: action.payload.limit } : b
+          b.category === action.payload.category ? { ...b, limit: action.payload.limit } : b,
         );
         return { ...state, budgets: updated, toast: "Budget updated." };
       }
@@ -141,7 +141,7 @@ export function useFinanceData() {
       state.transactions,
       state.search,
       state.filterType,
-      state.filterCategory
+      state.filterCategory,
     );
     return sortTransactions(filtered, state.sortBy);
   }, [state.transactions, state.search, state.filterType, state.filterCategory, state.sortBy]);
@@ -160,7 +160,8 @@ export function useFinanceData() {
   const insights = useMemo(() => {
     const expenses = state.transactions.filter(({ type }) => type === "expense");
     const categoryTotals = expenses.reduce((result, transaction) => {
-      result[transaction.category] = (result[transaction.category] || 0) + Number(transaction.amount);
+      result[transaction.category] =
+        (result[transaction.category] || 0) + Number(transaction.amount);
       return result;
     }, {});
 

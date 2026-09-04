@@ -45,7 +45,11 @@ export default function BudgetTracker({ budgets, loading }) {
                 </div>
                 <div className="ft-budget-meta">
                   <span className={`ft-budget-status ${over ? "is-over" : near ? "is-near" : ""}`}>
-                    {over ? `${Math.round(pct - 100)}% over budget` : near ? "Approaching limit" : "On track"}
+                    {over
+                      ? `${Math.round(pct - 100)}% over budget`
+                      : near
+                        ? "Approaching limit"
+                        : "On track"}
                   </span>
                   <span>
                     {over

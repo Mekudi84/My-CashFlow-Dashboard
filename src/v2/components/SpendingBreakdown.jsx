@@ -1,7 +1,18 @@
 import { useState } from "react";
 import { formatMoney } from "../utils/format";
 
-const PALETTE = ["#2a4cd4", "#0d8a5b", "#b87a00", "#7a3bd1", "#0fb5c9", "#d34a4a", "#3656b8", "#16805a", "#9b5a18", "#64748b"];
+const PALETTE = [
+  "#2a4cd4",
+  "#0d8a5b",
+  "#b87a00",
+  "#7a3bd1",
+  "#0fb5c9",
+  "#d34a4a",
+  "#3656b8",
+  "#16805a",
+  "#9b5a18",
+  "#64748b",
+];
 
 export default function SpendingBreakdown({ categoryTotals, total, loading }) {
   const [hover, setHover] = useState(null);
@@ -26,7 +37,14 @@ export default function SpendingBreakdown({ categoryTotals, total, loading }) {
     const large = endAngle - startAngle > Math.PI ? 1 : 0;
     const d = `M ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2}`;
     const isDim = hover && hover !== cat;
-    return { d, color: PALETTE[i % PALETTE.length], cat, value, percent: (value / total) * 100, dim: isDim };
+    return {
+      d,
+      color: PALETTE[i % PALETTE.length],
+      cat,
+      value,
+      percent: (value / total) * 100,
+      dim: isDim,
+    };
   });
 
   return (
@@ -43,7 +61,12 @@ export default function SpendingBreakdown({ categoryTotals, total, loading }) {
       ) : (
         <div className="ft-breakdown-body">
           <div className="ft-donut-wrap">
-            <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="ft-donut" role="img" aria-label="Spending by category donut">
+            <svg
+              viewBox={`0 0 ${SIZE} ${SIZE}`}
+              className="ft-donut"
+              role="img"
+              aria-label="Spending by category donut"
+            >
               {arcs.map((a, i) => (
                 <path
                   key={a.cat}
@@ -58,7 +81,9 @@ export default function SpendingBreakdown({ categoryTotals, total, loading }) {
                   onMouseLeave={() => setHover(null)}
                 />
               ))}
-              <text x={cx} y={cy - 4} textAnchor="middle" className="ft-donut-label">Total</text>
+              <text x={cx} y={cy - 4} textAnchor="middle" className="ft-donut-label">
+                Total
+              </text>
               <text x={cx} y={cy + 18} textAnchor="middle" className="ft-donut-value">
                 {formatMoney(total, { maximumFractionDigits: 0 })}
               </text>
@@ -76,7 +101,9 @@ export default function SpendingBreakdown({ categoryTotals, total, loading }) {
               >
                 <span className="ft-breakdown-swatch" style={{ background: a.color }} />
                 <span className="ft-breakdown-name">{a.cat}</span>
-                <span className="ft-breakdown-value">{formatMoney(a.value, { maximumFractionDigits: 0 })}</span>
+                <span className="ft-breakdown-value">
+                  {formatMoney(a.value, { maximumFractionDigits: 0 })}
+                </span>
                 <span className="ft-breakdown-percent">{a.percent.toFixed(1)}%</span>
               </li>
             ))}

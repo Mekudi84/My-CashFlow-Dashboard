@@ -36,8 +36,16 @@ function scrollToSection(id) {
 }
 
 export default function App() {
-  const { state, dispatch, summary, categories, filteredTransactions, budgetStats, insights, TODAY } =
-    useFinanceData();
+  const {
+    state,
+    dispatch,
+    summary,
+    categories,
+    filteredTransactions,
+    budgetStats,
+    insights,
+    TODAY,
+  } = useFinanceData();
   const { theme, toggleTheme } = useTheme();
   const [currency, setCurrency] = useLocalStorage("financeflow_currency", DEFAULT_CURRENCY);
   const [activeSection, setActiveSection] = useState("dashboard");
@@ -70,7 +78,7 @@ export default function App() {
         dispatch({ type: "ADD_TRANSACTION", payload: { ...data, id: Date.now() } });
       }
     },
-    [state.editingId, dispatch]
+    [state.editingId, dispatch],
   );
 
   const handleEdit = useCallback(
@@ -78,7 +86,7 @@ export default function App() {
       dispatch({ type: "START_EDIT", payload: id });
       scrollToSection("transactions");
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleDelete = useCallback(
@@ -86,21 +94,21 @@ export default function App() {
       if (!confirm("Delete this transaction?")) return;
       dispatch({ type: "DELETE_TRANSACTION", payload: id });
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleAddBudget = useCallback(
     (budget) => {
       dispatch({ type: "ADD_BUDGET", payload: budget });
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleDeleteBudget = useCallback(
     (id) => {
       dispatch({ type: "DELETE_BUDGET", payload: id });
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleClearAll = useCallback(() => {
@@ -131,7 +139,7 @@ export default function App() {
         scrollToSection("transactions");
       }
     },
-    [dispatch]
+    [dispatch],
   );
 
   const handleNav = useCallback((id) => {
@@ -162,18 +170,15 @@ export default function App() {
         <header className="topbar reveal" style={{ "--reveal-delay": "0ms" }}>
           <div className="topbar-left">
             <div className="topbar-brand">
-              <img
-                src="/basseyflow-logo.svg"
-                alt="BasseyFlow"
-                className="topbar-logo"
-              />
+              <img src="/basseyflow-logo.svg" alt="BasseyFlow" className="topbar-logo" />
             </div>
             <p className="eyebrow brand-eyebrow">
               <span>BASSEYFLOW</span>
               <span className="brand-tagline">Financial clarity · Smarter cash flow</span>
             </p>
             <h1>
-              {greeting}, <span className="user-name">Unyime</span> <span aria-hidden="true">👋</span>
+              {greeting}, <span className="user-name">Unyime</span>{" "}
+              <span aria-hidden="true">👋</span>
             </h1>
             <p className="subtitle">Here's your financial overview for {monthYear}.</p>
           </div>
@@ -198,7 +203,11 @@ export default function App() {
           </div>
 
           <section className="grid-two">
-            <article className="panel reveal" style={{ "--reveal-delay": "180ms" }} id="transactions-form">
+            <article
+              className="panel reveal"
+              style={{ "--reveal-delay": "180ms" }}
+              id="transactions-form"
+            >
               <div className="panel-heading">
                 <div>
                   <p className="eyebrow">TRANSACTION</p>
@@ -226,7 +235,11 @@ export default function App() {
               </div>
 
               <BudgetForm onAddBudget={handleAddBudget} />
-              <BudgetList budgetStats={budgetStats} onDeleteBudget={handleDeleteBudget} currency={currency} />
+              <BudgetList
+                budgetStats={budgetStats}
+                onDeleteBudget={handleDeleteBudget}
+                currency={currency}
+              />
             </article>
           </section>
 
@@ -239,7 +252,11 @@ export default function App() {
               <ExpenseBreakdown insights={insights} currency={currency} />
             </div>
             <div className="reveal" style={{ "--reveal-delay": "360ms" }} id="insights">
-              <InsightsPanel insights={insights} budgetCount={state.budgets.length} currency={currency} />
+              <InsightsPanel
+                insights={insights}
+                budgetCount={state.budgets.length}
+                currency={currency}
+              />
             </div>
           </section>
 
@@ -263,7 +280,8 @@ export default function App() {
                   </span>
                 )}
                 <span className="count-badge">
-                  {filteredTransactions.length} {filteredTransactions.length === 1 ? "item" : "items"}
+                  {filteredTransactions.length}{" "}
+                  {filteredTransactions.length === 1 ? "item" : "items"}
                 </span>
               </div>
             </div>

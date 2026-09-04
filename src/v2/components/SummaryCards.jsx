@@ -29,13 +29,12 @@ function SummaryCard({ card, summary, loading, index }) {
   const deltaSuffix = "from last month";
 
   return (
-    <article
-      className={`ft-summary-card tone-${card.tone}`}
-      style={{ "--card-index": index }}
-    >
+    <article className={`ft-summary-card tone-${card.tone}`} style={{ "--card-index": index }}>
       <div className="ft-summary-top">
         <span className="ft-card-label">{card.label}</span>
-        <span className="ft-card-icon"><Icon name={card.icon} size={16} /></span>
+        <span className="ft-card-icon">
+          <Icon name={card.icon} size={16} />
+        </span>
       </div>
       <div className="ft-summary-value">
         {loading ? (

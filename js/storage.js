@@ -1,7 +1,7 @@
 const KEYS = {
   transactions: "financeflow_transactions",
   budgets: "financeflow_budgets",
-  theme: "financeflow_theme"
+  theme: "financeflow_theme",
 };
 
 export const loadData = (key, fallback = []) => {

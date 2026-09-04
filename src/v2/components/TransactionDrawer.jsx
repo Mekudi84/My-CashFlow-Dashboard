@@ -38,7 +38,12 @@ export default function TransactionDrawer({ transaction, open, onClose, onSave, 
   };
 
   return (
-    <div className="ft-drawer-root" role="dialog" aria-modal="true" aria-label="Transaction details">
+    <div
+      className="ft-drawer-root"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Transaction details"
+    >
       <div className="ft-drawer-overlay" onClick={onClose} />
       <aside className="ft-drawer" aria-label="Transaction details">
         <header className="ft-drawer-head">
@@ -54,7 +59,11 @@ export default function TransactionDrawer({ transaction, open, onClose, onSave, 
         <form className="ft-drawer-form" onSubmit={handleSave}>
           <label>
             Name
-            <input value={draft.name} onChange={(e) => handleChange("name", e.target.value)} required />
+            <input
+              value={draft.name}
+              onChange={(e) => handleChange("name", e.target.value)}
+              required
+            />
           </label>
 
           <div className="ft-modal-row">
@@ -71,21 +80,37 @@ export default function TransactionDrawer({ transaction, open, onClose, onSave, 
             </label>
             <label>
               Date
-              <input type="date" value={draft.date} onChange={(e) => handleChange("date", e.target.value)} required />
+              <input
+                type="date"
+                value={draft.date}
+                onChange={(e) => handleChange("date", e.target.value)}
+                required
+              />
             </label>
           </div>
 
           <div className="ft-modal-row">
             <label>
               Category
-              <select value={draft.category} onChange={(e) => handleChange("category", e.target.value)}>
-                {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+              <select
+                value={draft.category}
+                onChange={(e) => handleChange("category", e.target.value)}
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
               </select>
             </label>
             <label>
               Status
               <select value={draft.status} onChange={(e) => handleChange("status", e.target.value)}>
-                {STATUSES.map((s) => <option key={s} value={s}>{s[0].toUpperCase() + s.slice(1)}</option>)}
+                {STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {s[0].toUpperCase() + s.slice(1)}
+                  </option>
+                ))}
               </select>
             </label>
           </div>
@@ -139,8 +164,12 @@ export default function TransactionDrawer({ transaction, open, onClose, onSave, 
           </div>
 
           <footer className="ft-modal-foot">
-            <button type="button" className="ft-btn ft-btn-danger" onClick={handleDelete}>Delete</button>
-            <button type="submit" className="ft-btn ft-btn-primary">Save changes</button>
+            <button type="button" className="ft-btn ft-btn-danger" onClick={handleDelete}>
+              Delete
+            </button>
+            <button type="submit" className="ft-btn ft-btn-primary">
+              Save changes
+            </button>
           </footer>
         </form>
       </aside>

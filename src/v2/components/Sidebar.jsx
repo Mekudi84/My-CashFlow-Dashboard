@@ -15,7 +15,9 @@ export default function Sidebar({ active, onSelect, collapsed, onToggleCollapse 
     <aside className={`ft-sidebar ${collapsed ? "is-collapsed" : ""}`} aria-label="Primary">
       <div className="ft-sidebar-head">
         <div className="ft-brand">
-          <div className="ft-brand-mark" aria-hidden="true">◆</div>
+          <div className="ft-brand-mark" aria-hidden="true">
+            ◆
+          </div>
           {!collapsed && (
             <div className="ft-brand-text">
               <strong>FinanceFlow</strong>
@@ -29,7 +31,11 @@ export default function Sidebar({ active, onSelect, collapsed, onToggleCollapse 
           onClick={onToggleCollapse}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <Icon name={collapsed ? "arrowUp" : "arrowDown"} size={14} style={{ transform: collapsed ? "rotate(90deg)" : "rotate(-90deg)" }} />
+          <Icon
+            name={collapsed ? "arrowUp" : "arrowDown"}
+            size={14}
+            style={{ transform: collapsed ? "rotate(90deg)" : "rotate(-90deg)" }}
+          />
         </button>
       </div>
 
@@ -44,7 +50,9 @@ export default function Sidebar({ active, onSelect, collapsed, onToggleCollapse 
             title={collapsed ? item.label : undefined}
             aria-current={active === item.id ? "page" : undefined}
           >
-            <span className="ft-nav-icon"><Icon name={item.icon} size={18} /></span>
+            <span className="ft-nav-icon">
+              <Icon name={item.icon} size={18} />
+            </span>
             {!collapsed && <span className="ft-nav-label">{item.label}</span>}
             {active === item.id && <span className="ft-nav-indicator" aria-hidden="true" />}
           </button>

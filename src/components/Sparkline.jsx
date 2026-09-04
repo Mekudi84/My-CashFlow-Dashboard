@@ -1,4 +1,10 @@
-export default function Sparkline({ points, color = "currentColor", width = 120, height = 36, fill = true }) {
+export default function Sparkline({
+  points,
+  color = "currentColor",
+  width = 120,
+  height = 36,
+  fill = true,
+}) {
   if (!points || points.length < 2) return null;
 
   const min = Math.min(...points);
@@ -12,7 +18,9 @@ export default function Sparkline({ points, color = "currentColor", width = 120,
     return [x, y];
   });
 
-  const path = coords.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(2)}`).join(" ");
+  const path = coords
+    .map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(2)} ${y.toFixed(2)}`)
+    .join(" ");
   const areaPath = `${path} L${width} ${height} L0 ${height} Z`;
 
   const id = `spark-grad-${Math.abs(color.split("").reduce((a, c) => a + c.charCodeAt(0), 0))}`;
@@ -33,7 +41,14 @@ export default function Sparkline({ points, color = "currentColor", width = 120,
         </linearGradient>
       </defs>
       {fill && <path d={areaPath} fill={`url(#${id})`} />}
-      <path d={path} fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+      <path
+        d={path}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

@@ -89,7 +89,9 @@ export default function SummaryCards({ summary, currency, onCardAction, transact
       >
         <div className="card-top">
           <span className="card-label">Total Income</span>
-          <div className="card-icon" aria-hidden="true">↗</div>
+          <div className="card-icon" aria-hidden="true">
+            ↗
+          </div>
         </div>
         <strong>
           <AnimatedNumber value={income} format={(v) => formatMoney(v, currency)} />
@@ -115,7 +117,9 @@ export default function SummaryCards({ summary, currency, onCardAction, transact
       >
         <div className="card-top">
           <span className="card-label">Total Expenses</span>
-          <div className="card-icon" aria-hidden="true">↘</div>
+          <div className="card-icon" aria-hidden="true">
+            ↘
+          </div>
         </div>
         <strong>
           <AnimatedNumber value={expenses} format={(v) => formatMoney(v, currency)} />
@@ -129,11 +133,17 @@ export default function SummaryCards({ summary, currency, onCardAction, transact
       <article className="summary-card savings">
         <div className="card-top">
           <span className="card-label">Savings Rate</span>
-          <div className="card-icon" aria-hidden="true">◉</div>
+          <div className="card-icon" aria-hidden="true">
+            ◉
+          </div>
         </div>
         <strong>{Math.max(savingsRate, 0).toFixed(1)}%</strong>
         <div className="card-foot">
-          <small>{income ? `${formatMoney(Math.max(balance, 0), currency)} currently saved` : "No income recorded yet"}</small>
+          <small>
+            {income
+              ? `${formatMoney(Math.max(balance, 0), currency)} currently saved`
+              : "No income recorded yet"}
+          </small>
         </div>
       </article>
     </section>

@@ -14,5 +14,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/v2/*" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
