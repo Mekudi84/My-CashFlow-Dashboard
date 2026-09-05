@@ -25,6 +25,9 @@ import categories from "./categories";
 import transactions from "./transactions";
 import budgets from "./budgets";
 import goals from "./goals";
+import dashboardSummary from "./dashboard/summary";
+import dashboardCashflow from "./dashboard/cashflow";
+import dashboardSpending from "./dashboard/spending-by-category";
 import { requestId, requestLogger } from "./_lib/request";
 import { notFoundHandler, errorHandler } from "./_lib/middleware";
 
@@ -63,6 +66,9 @@ mount("/api/categories", categories as Handler);
 mount("/api/transactions", transactions as Handler);
 mount("/api/budgets", budgets as Handler);
 mount("/api/goals", goals as Handler);
+app.get("/api/dashboard/summary", adapt(dashboardSummary));
+app.get("/api/dashboard/cashflow", adapt(dashboardCashflow));
+app.get("/api/dashboard/spending-by-category", adapt(dashboardSpending));
 
 app.use(notFoundHandler);
 app.use(errorHandler);

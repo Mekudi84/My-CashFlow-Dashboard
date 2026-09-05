@@ -16,8 +16,10 @@
     "baseUrl": ".",
     "paths": {
       "@/api/*": ["api/*"],
-      "@/db/*": ["db/*"]
+      "@/db/*": ["db/*"],
+      "@/types": ["src/types/index.ts"],
+      "@/types/*": ["src/types/*"]
     }
   },
-  "include": ["api/**/*.ts", "db/**/*.ts", "drizzle.config.ts"]
+  "include": ["api/**/*.ts", "db/**/*.ts", "drizzle.config.ts", "src/types/**/*.ts", "tests/**/*.ts"]
 }

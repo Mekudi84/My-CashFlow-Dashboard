@@ -93,10 +93,9 @@ export function useCashFlow(range: DateRangeKey) {
   return useQuery({
     queryKey: qk.cashFlow(range),
     queryFn: async () => {
-      const res = await api.get<CashFlowResponse>(`/dashboard/cashflow?range=${range}`);
+      const res = await api.get<CashFlowResponse>(`/dashboard/cashflow`, { range });
       return res.data;
     },
-    enabled: false, // Phase 6 wires this; for now return empty
   });
 }
 
@@ -107,7 +106,6 @@ export function useSpendingByCategory() {
       const res = await api.get<SpendingResponse>("/dashboard/spending-by-category");
       return res.data;
     },
-    enabled: false, // Phase 6
   });
 }
 
@@ -118,7 +116,6 @@ export function useSummary() {
       const res = await api.get<SummaryResponse>("/dashboard/summary");
       return res.data;
     },
-    enabled: false, // Phase 6
   });
 }
 
